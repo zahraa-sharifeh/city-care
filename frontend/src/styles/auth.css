@@ -121,6 +121,64 @@
   font-size: 13px;
 }
 
+.auth-input-error {
+  border-color: #b42318 !important;
+  background: #fff5f5;
+}
+
+.auth-field-error {
+  display: block;
+  color: #b42318;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.auth-phone-wrapper {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.auth-country-code {
+  width: 130px;
+  border: 1px solid #e0e4e8;
+  outline: none;
+  background-color: #f8f9fa;
+  background-size: 24px;
+  background-repeat: no-repeat;
+  background-position: 10px center;
+  padding: 12px 10px 12px 40px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #111827;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111827' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"), url('https://flagcdn.com/w20/us.png');
+  background-repeat: no-repeat, no-repeat;
+  background-position: right 8px center, 10px center;
+  background-size: 16px, 24px;
+  padding-right: 30px;
+}
+
+.auth-country-code:hover {
+  background: #f0f4f8;
+  border-color: #d0d8e0;
+}
+
+.auth-country-code:focus {
+  background: #ffffff;
+  border-color: #4b3b8f;
+  box-shadow: 0 2px 8px rgba(75, 59, 143, 0.1);
+}
+
+.auth-phone-wrapper .auth-input {
+  flex: 1;
+  margin: 0;
+}
+
 /* Button like the sample: rounded + shadow */
 .auth-btn {
   margin-top: 18px;

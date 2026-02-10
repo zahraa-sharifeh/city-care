@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 
+
 function Home() {
   const user = JSON.parse(localStorage.getItem("user") || "null");
   return (
