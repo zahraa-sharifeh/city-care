@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 
-const userSchema = new mongoose.Schema(
+const adminSchema = new mongoose.Schema(
   {
     fullName: { type: String, required: true, trim: true, minlength: 2 },
     email: {
@@ -13,9 +13,10 @@ const userSchema = new mongoose.Schema(
       validate: [validator.isEmail, "Invalid email"],
     },
     passwordHash: { type: String, required: true },
+    role: { type: String, enum: ["DISTRICT_ADMIN", "SUPER_ADMIN"], default: "DISTRICT_ADMIN" },
     districtId: { type: mongoose.Schema.Types.ObjectId, ref: "District", default: null },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("Admin", adminSchema);
