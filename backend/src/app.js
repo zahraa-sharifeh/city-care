@@ -15,5 +15,16 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/uploads", require("express").static("uploads"));
+
+const commentRoutes = require("./routes/commentRoutes");
+app.use("/api", commentRoutes);
+
+const locationRoutes = require("./routes/locationRoutes");
+app.use("/api", locationRoutes);
+
+const reportRoutes = require("./routes/reportRoutes");
+app.use("/api", reportRoutes);
+
 
 module.exports = app;

@@ -13,9 +13,8 @@ const userSchema = new mongoose.Schema(
       validate: [validator.isEmail, "Invalid email"],
     },
     passwordHash: { type: String, required: true },
-    districtId: { type: mongoose.Schema.Types.ObjectId, ref: "District", default: null },
+    role: { type: String, enum: ["user", "admin"], default: "user" },
+    createdAt: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );
-
-module.exports = mongoose.model("User", userSchema);
