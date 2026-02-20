@@ -6,7 +6,7 @@ const { getGovernorates, getDistricts } = require("../controllers/locationContro
 router.get("/governorates", auth, getGovernorates);
 router.get("/districts", auth, getDistricts);
 
-const locationRoutes = require("./routes/locationRoutes");
-app.use("/api", locationRoutes);
+// const locationRoutes = require("./routes/locationRoutes");
+// app.use("/api", locationRoutes);
 
 module.exports = router;
