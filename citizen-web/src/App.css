@@ -1,0 +1,143 @@
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.topbar {
+  background: linear-gradient(90deg, #1b4332 0%, #2d6a4f 100%);
+  color: #f8faf8;
+  padding: 0.85rem 1.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: 0 2px 12px rgba(27, 67, 50, 0.15);
+}
+.topbar a {
+  color: #f8faf8;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.topbar a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.topbar nav {
+  display: flex;
+  gap: 1.1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.main {
+  flex: 1;
+  padding: 1.35rem;
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+}
+.card {
+  background: var(--color-paper, #fffef9);
+  border-radius: 16px;
+  padding: 1.35rem 1.5rem;
+  box-shadow: 0 4px 20px rgba(27, 67, 50, 0.06);
+  border: 1px solid rgba(82, 121, 111, 0.12);
+}
+.form-grid {
+  display: grid;
+  gap: 0.85rem;
+}
+label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.3rem;
+  color: #344e41;
+}
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid rgba(82, 121, 111, 0.35);
+  border-radius: 10px;
+  background: #fff;
+  color: #1b4332;
+}
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #40916c;
+  box-shadow: 0 0 0 3px rgba(64, 145, 108, 0.18);
+}
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  padding: 0.6rem 1.1rem;
+  background: linear-gradient(180deg, #2d6a4f 0%, #1b4332 100%);
+  color: #f8faf8;
+  font-weight: 600;
+}
+button:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+button.secondary {
+  background: #52796f;
+}
+button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+.error {
+  color: #9b2226;
+  font-size: 0.9rem;
+}
+.report-list {
+  display: grid;
+  gap: 0.75rem;
+}
+.report-row {
+  border: 1px solid rgba(82, 121, 111, 0.18);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  background: #fff;
+}
+.report-row a {
+  text-decoration: none;
+  color: #1b4332;
+  font-weight: 600;
+}
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: rgba(64, 145, 108, 0.15);
+  color: #1b4332;
+}
+.muted {
+  color: #52796f;
+  font-size: 0.875rem;
+}
+.comment {
+  border-top: 1px solid rgba(82, 121, 111, 0.12);
+  padding: 0.75rem 0;
+}
+.thumb {
+  max-width: 120px;
+  max-height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 0.5rem;
+  margin-top: 0.35rem;
+}

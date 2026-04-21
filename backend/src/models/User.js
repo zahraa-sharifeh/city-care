@@ -13,7 +13,9 @@ const userSchema = new mongoose.Schema(
       validate: [validator.isEmail, "Invalid email"],
     },
     passwordHash: { type: String, required: true },
-    role: { type: String, enum: ["user", "admin"], default: "user" },  },
+    role: { type: String, enum: ["user", "admin"], default: "user" },
+    districtId: { type: mongoose.Schema.Types.ObjectId, ref: "District", default: null },
+  },
   { timestamps: true }
 );
 

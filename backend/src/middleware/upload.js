@@ -1,8 +1,13 @@
+const fs = require("fs");
 const multer = require("multer");
 const path = require("path");
 
+// backend/uploads — not cwd-dependent; create if missing (avoids 500 on first upload).
+const UPLOAD_DIR = path.join(__dirname, "..", "..", "uploads");
+fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
+  destination: (req, file, cb) => cb(null, UPLOAD_DIR),
   filename: (req, file, cb) => {
     const safe = Date.now() + "-" + file.originalname.replace(/\s+/g, "_");
     cb(null, safe);
