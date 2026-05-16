@@ -16,8 +16,17 @@ const storage = multer.diskStorage({
 
 function fileFilter(req, file, cb) {
   const ext = path.extname(file.originalname).toLowerCase();
-  const ok = [".jpg", ".jpeg", ".png", ".webp"].includes(ext);
-  cb(ok ? null : new Error("Only images allowed"), ok);
+  const allowedExt = [".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif", ".gif"];
+  const allowedMime = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/heic",
+    "image/heif",
+    "image/gif",
+  ];
+  const ok = allowedExt.includes(ext) || allowedMime.includes((file.mimetype || "").toLowerCase());
+  cb(ok ? null : new Error("Only image files are allowed (jpg, jpeg, png, webp, heic, heif, gif)"), ok);
 }
 
 module.exports = multer({ storage, fileFilter, limits: { fileSize: 5 * 1024 * 1024 } });

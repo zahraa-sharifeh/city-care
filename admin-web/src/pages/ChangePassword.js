@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { apiFetch } from "../api/client";
+import { handleFormSubmit } from "../utils/formSubmit";
 import "../App.css";
 
 export default function ChangePassword() {
+  const { t } = useTranslation();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -11,12 +14,11 @@ export default function ChangePassword() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function onSubmit(e) {
-    e.preventDefault();
+  async function onSubmit() {
     setError("");
     setSuccess("");
     if (newPassword !== confirm) {
-      setError("New password and confirmation do not match.");
+      setError(t("account.mismatch"));
       return;
     }
     setLoading(true);
@@ -25,24 +27,25 @@ export default function ChangePassword() {
         method: "PATCH",
         body: JSON.stringify({ currentPassword, newPassword }),
       });
-      setSuccess("Password updated. Use the new password next time you sign in.");
+      setSuccess(t("account.success"));
       setCurrentPassword("");
       setNewPassword("");
       setConfirm("");
     } catch (err) {
-      setError(err.message || "Failed to update password");
+      setError(err.message || t("account.failed"));
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="card" style={{ maxWidth: 460 }}>
-      <h1>Change password</h1>
-      <p className="muted">Enter your current password, then a new one (at least 6 characters).</p>
-      <form className="form-grid" onSubmit={onSubmit} style={{ marginTop: "1.15rem" }}>
+    <div className="account-page">
+      <div className="card account-card">
+      <h1>{t("account.changePassword")}</h1>
+      <p className="muted">{t("account.lead")}</p>
+      <form className="form-grid" onSubmit={handleFormSubmit(onSubmit)} style={{ marginTop: "1.15rem" }}>
         <div>
-          <label htmlFor="cur">Current password</label>
+          <label htmlFor="cur">{t("account.currentPassword")}</label>
           <input
             id="cur"
             type="password"
@@ -50,11 +53,11 @@ export default function ChangePassword() {
             onChange={e => setCurrentPassword(e.target.value)}
             required
             autoComplete="current-password"
-            placeholder="••••••••"
+            placeholder={t("account.currentPlaceholder")}
           />
         </div>
         <div>
-          <label htmlFor="nw">New password</label>
+          <label htmlFor="nw">{t("account.newPassword")}</label>
           <input
             id="nw"
             type="password"
@@ -63,11 +66,11 @@ export default function ChangePassword() {
             required
             minLength={6}
             autoComplete="new-password"
-            placeholder="At least 6 characters"
+            placeholder={t("account.newPlaceholder")}
           />
         </div>
         <div>
-          <label htmlFor="cf">Confirm new password</label>
+          <label htmlFor="cf">{t("account.confirmPassword")}</label>
           <input
             id="cf"
             type="password"
@@ -76,7 +79,7 @@ export default function ChangePassword() {
             required
             minLength={6}
             autoComplete="new-password"
-            placeholder="Repeat new password"
+            placeholder={t("account.confirmPlaceholder")}
           />
         </div>
         {error ? <p className="error" role="alert">{error}</p> : null}
@@ -97,12 +100,13 @@ export default function ChangePassword() {
           </p>
         ) : null}
         <button type="submit" disabled={loading}>
-          {loading ? "Saving…" : "Update password"}
+          {loading ? t("common.saving") : t("account.updatePassword")}
         </button>
       </form>
       <p className="muted" style={{ marginTop: "1.15rem" }}>
-        <Link to="/reports">Back to reports</Link>
+        <Link to="/reports">{t("account.backToReports")}</Link>
       </p>
+      </div>
     </div>
   );
 }

@@ -4,6 +4,11 @@ import { apiFetch, getToken, setToken } from "../api/client";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
+  const persistUser = useCallback((nextUser) => {
+    localStorage.setItem("citizen_user", JSON.stringify(nextUser));
+    setUser(nextUser);
+  }, []);
+
   const [user, setUser] = useState(() => {
     const raw = localStorage.getItem("citizen_user");
     if (!raw) return null;
@@ -20,10 +25,9 @@ export function AuthProvider({ children }) {
       body: JSON.stringify({ email, password }),
     });
     setToken(data.token);
-    localStorage.setItem("citizen_user", JSON.stringify(data.user));
-    setUser(data.user);
+    persistUser(data.user);
     return data;
-  }, []);
+  }, [persistUser]);
 
   const register = useCallback(async (payload) => {
     const data = await apiFetch("/api/auth/register", {
@@ -31,10 +35,35 @@ export function AuthProvider({ children }) {
       body: JSON.stringify(payload),
     });
     setToken(data.token);
-    localStorage.setItem("citizen_user", JSON.stringify(data.user));
-    setUser(data.user);
+    persistUser(data.user);
     return data;
-  }, []);
+  }, [persistUser]);
+
+  const refreshUser = useCallback(
+    async (nextUser = null) => {
+      if (nextUser) {
+        persistUser(nextUser);
+        return nextUser;
+      }
+      const data = await apiFetch("/api/auth/me");
+      persistUser(data.user);
+      return data.user;
+    },
+    [persistUser]
+  );
+
+  const loginWithGoogle = useCallback(
+    async credential => {
+      const data = await apiFetch("/api/auth/google", {
+        method: "POST",
+        body: JSON.stringify({ credential }),
+      });
+      setToken(data.token);
+      persistUser(data.user);
+      return data;
+    },
+    [persistUser]
+  );
 
   const logout = useCallback(() => {
     setToken(null);
@@ -47,10 +76,12 @@ export function AuthProvider({ children }) {
       user,
       isAuthenticated: Boolean(getToken() && user),
       login,
+      loginWithGoogle,
       register,
+      refreshUser,
       logout,
     }),
-    [user, login, register, logout]
+    [user, login, loginWithGoogle, register, refreshUser, logout]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

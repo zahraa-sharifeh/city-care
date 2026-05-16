@@ -6,6 +6,8 @@ import Login from "./pages/Login";
 import ReportsList from "./pages/ReportsList";
 import AdminReportDetail from "./pages/AdminReportDetail";
 import ChangePassword from "./pages/ChangePassword";
+import Analytics from "./pages/Analytics";
+import DistrictSpotlight from "./pages/DistrictSpotlight";
 import { useAdminAuth } from "./context/AdminAuthContext";
 import { getAdminToken } from "./api/client";
 import "./App.css";
@@ -29,6 +31,8 @@ export default function App() {
         }
       >
         <Route path="/reports" element={<ReportsList />} />
+        <Route path="/analytics" element={<Analytics />} />
+        <Route path="/district-spotlight" element={<DistrictSpotlight />} />
         <Route path="/reports/:id" element={<AdminReportDetail />} />
         <Route path="/account/password" element={<ChangePassword />} />
       </Route>

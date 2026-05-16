@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { apiFetch } from "../api/client";
 import AuthLayout from "../components/AuthLayout";
+import AuthPasswordField from "../components/AuthPasswordField";
+import GoogleCitizenSignIn, { isGoogleSignInConfigured } from "../components/GoogleCitizenSignIn";
+import { handleFormSubmit } from "../utils/formSubmit";
 import "../App.css";
 
 export default function Register() {
-  const { register } = useAuth();
+  const { t } = useTranslation();
+  const { register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -53,8 +58,7 @@ export default function Register() {
     };
   }, [governorateId]);
 
-  async function onSubmit(e) {
-    e.preventDefault();
+  async function onSubmit() {
     setError("");
     setLoading(true);
     try {
@@ -66,70 +70,98 @@ export default function Register() {
       });
       navigate("/reports", { replace: true });
     } catch (err) {
-      setError(err.message || "Registration failed");
+      setError(err.message || t("register.failed"));
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <AuthLayout
-      title="Join City Care"
-      lead="Create your citizen account. Adding your district is optional and helps us show more relevant context later."
-    >
-      <form className="auth-form" onSubmit={onSubmit}>
-        <div className="auth-field">
-          <label htmlFor="fullName">Full name</label>
-          <input id="fullName" value={fullName} onChange={e => setFullName(e.target.value)} required minLength={2} placeholder="Your name" autoComplete="name" />
-        </div>
-        <div className="auth-field">
-          <label htmlFor="email">Email</label>
-          <input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} required autoComplete="email" placeholder="you@example.com" />
-        </div>
-        <div className="auth-field">
-          <label htmlFor="password">Password</label>
-          <input
+    <AuthLayout title={t("register.title")} lead={t("register.lead")}>
+      <div className="auth-oauth-panel">
+        {isGoogleSignInConfigured() ? (
+          <>
+            <GoogleCitizenSignIn
+              disabled={loading}
+              onSuccess={async credential => {
+                setError("");
+                await loginWithGoogle(credential);
+                navigate("/reports", { replace: true });
+              }}
+              onError={msg => setError(msg)}
+            />
+            <div className="auth-divider-or">
+              <span className="auth-divider-or__line" aria-hidden="true" />
+              <span className="auth-divider-or__text">{t("register.dividerOr")}</span>
+              <span className="auth-divider-or__line" aria-hidden="true" />
+            </div>
+          </>
+        ) : (
+          <p className="auth-google-hint" role="note">
+            <strong className="auth-google-hint__title">{t("register.googleHintTitle")}</strong>
+            <span className="auth-google-hint__body">
+              {" "}
+              Add <code>REACT_APP_GOOGLE_CLIENT_ID</code> to <code>citizen-web/.env</code> and <code>GOOGLE_CLIENT_ID</code> to <code>backend/.env</code>, then restart both dev servers.
+            </span>
+          </p>
+        )}
+      </div>
+
+      <form className="auth-form auth-form--register" onSubmit={handleFormSubmit(onSubmit)} noValidate>
+        <div className="auth-form-bigrid">
+          <div className="auth-field">
+            <label htmlFor="fullName">{t("auth.fullName")}</label>
+            <input
+              id="fullName"
+              value={fullName}
+              onChange={e => setFullName(e.target.value)}
+              required
+              minLength={2}
+              placeholder={t("register.fullNamePlaceholder")}
+              autoComplete="name"
+            />
+          </div>
+          <div className="auth-field">
+            <label htmlFor="email">{t("auth.email")}</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+              placeholder="you@example.com"
+            />
+          </div>
+          <AuthPasswordField
             id="password"
-            type="password"
+            label={t("auth.password")}
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
             minLength={6}
             autoComplete="new-password"
-            placeholder="At least 6 characters"
+            placeholder={t("register.passwordPlaceholder")}
+            disabled={loading}
+            hint={<p className="auth-field-hint">{t("register.passwordHint")}</p>}
           />
         </div>
-        <div className="auth-divider" />
-        <div className="auth-field">
-          <label htmlFor="gov">Governorate (optional)</label>
-          <select id="gov" value={governorateId} onChange={e => setGovernorateId(e.target.value)}>
-            <option value="">Choose if you like</option>
-            {governorates.map(g => (
-              <option key={g._id} value={g._id}>
-                {g.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="auth-field">
-          <label htmlFor="dist">District (optional)</label>
-          <select id="dist" value={districtId} onChange={e => setDistrictId(e.target.value)} disabled={!governorateId}>
-            <option value="">—</option>
-            {districts.map(d => (
-              <option key={d._id} value={d._id}>
-                {d.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        {error ? <p className="auth-error" role="alert">{error}</p> : null}
+
+        {error ? (
+          <p className="auth-error" role="alert">
+            {error}
+          </p>
+        ) : null}
         <button type="submit" className="auth-submit" disabled={loading}>
-          {loading ? "Creating your account…" : "Create account"}
+          {loading ? t("register.submitting") : t("auth.createAccount")}
         </button>
       </form>
-      <p className="auth-footer">
-        Already have an account? <Link to="/login">Sign in</Link>
-      </p>
+
+      <div className="auth-footer-strip">
+        <p className="auth-footer">
+          {t("register.footerPrompt")} <Link to="/login">{t("auth.signInLink")}</Link>
+        </p>
+      </div>
     </AuthLayout>
   );
 }

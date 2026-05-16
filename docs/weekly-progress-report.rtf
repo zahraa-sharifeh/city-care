@@ -1,0 +1,82 @@
+{\rtf1\ansi\deff0
+{\fonttbl{\f0 Calibri;}}
+\fs24
+\b Weekly Project Progress Report \u38? Deployment Preparation\b0\par
+\par
+\b 1) Project Overview (Brief)\b0\par
+\b Project Title:\b0 Smart City Issue Reporting System\par
+\b Short Description:\b0 A full-stack web platform where citizens report city issues with photos and map location, while municipal admins review, prioritize, assign departments, track duplicates, and update report status with notifications.\par
+\b Current Completion Percentage (Estimate):\b0 80%\par
+\par
+\b 2) Team Contributions (Solo Project)\b0\par
+\b Name:\b0 Zahraa Fouad Sharifeh\par
+\b Tasks Completed This Week:\b0\par
+\bullet\tab Implemented citizen notification filters (All / Unread / Status).\par
+\bullet\tab Standardized user-friendly status labels across citizen and admin UIs.\par
+\bullet\tab Added admin status notes and displayed them in citizen notifications/report details.\par
+\bullet\tab Added map pin picker in citizen report creation (click/drag marker).\par
+\bullet\tab Added admin map views in reports list and report detail pages.\par
+\bullet\tab Extended admin filters (status, category, date range, district, department, priority).\par
+\bullet\tab Added priority field in report schema and integrated it in admin update/list UI.\par
+\bullet\tab Added Department model, APIs, and assignment UI.\par
+\bullet\tab Implemented duplicate detection heuristic and duplicate moderation actions.\par
+\bullet\tab Added analytics endpoint and admin analytics dashboard.\par
+\bullet\tab Added email notifications on status transitions (text + HTML template + preview mode).\par
+\bullet\tab Updated documentation (README, docs/API.md, env config notes).\par
+\b Tasks Currently In Progress:\b0\par
+\bullet\tab Final deployment configuration and production validation.\par
+\bullet\tab Final QA pass and end-to-end testing on deployed environment.\par
+\b Specific Contribution to the Project:\b0 Full-stack architecture, backend APIs, frontend UX/features, analytics, notifications, and deployment preparation completed individually.\par
+\par
+\b 3) Work Completed This Week\b0\par
+\bullet\tab Implemented citizen notifications improvements: filters by unread and status, unread badge, and read-state actions.\par
+\bullet\tab Unified status wording in UI: PENDING -> Submitted, IN_PROGRESS -> In Progress, etc.\par
+\bullet\tab Implemented status-note flow from admin updates to citizen notification/report display.\par
+\bullet\tab Added geospatial improvements: map pin picker and coordinate validation in report creation.\par
+\bullet\tab Added admin geospatial visibility: read-only report maps in list/detail pages.\par
+\bullet\tab Extended admin backend filters: status, category, dateFrom/dateTo, districtId, priority, departmentId.\par
+\bullet\tab Added priority management: schema enum + admin edit + list display/filter support.\par
+\bullet\tab Added department assignment: Department model + admin APIs + admin UI controls.\par
+\bullet\tab Implemented duplicate handling: candidate detection by distance/time/category + mark duplicate/ignore actions.\par
+\bullet\tab Added analytics: aggregation endpoint + dashboard (KPIs, breakdowns, trend).\par
+\bullet\tab Added email notifications: SMTP status-change emails + preview mode.\par
+\bullet\tab Completed lint/build/smoke validations after major features.\par
+\par
+\b 4) Demonstration (Short Videos)\b0\par
+\b Video 1: Citizen Flow\b0\par
+\bullet\tab Register/Login\par
+\bullet\tab Create report with map pin and photo\par
+\b Video 2: Admin Flow\b0\par
+\bullet\tab Reports list with advanced filters\par
+\bullet\tab Open detail, change status/priority/department\par
+\b Video Links:\b0\par
+\bullet\tab Video 1: https://drive.google.com/file/d/1acmvD9Q-x_2a4av0sdlU8RaLi3h93N_x/view?usp=sharing\par
+\bullet\tab Video 2: https://drive.google.com/file/d/1hpDZytDzdBgyso0f159SBQrgwfGXVi75/view?usp=sharing\par
+\par
+\b 5) Challenges / Blockers\b0\par
+\bullet\tab Managing multiple feature tracks simultaneously while avoiding regressions.\par
+\bullet\tab Keeping frontend labels user-friendly while preserving strict backend enums.\par
+\bullet\tab Ensuring map coordinate quality across create/view/admin flows.\par
+\bullet\tab Preparing reliable SMTP configuration for production deployment.\par
+\bullet\tab Time pressure near deployment while maintaining testing quality.\par
+\par
+\b 6) Plan for Next Week (Deployment Focus)\b0\par
+\bullet\tab Finalize any remaining optional feature only if time permits.\par
+\bullet\tab Prepare production environment variables for backend and both frontends.\par
+\bullet\tab Prepare production MongoDB connection and data integrity checks.\par
+\bullet\tab Deploy backend service (Node runtime + reverse proxy/server config).\par
+\bullet\tab Deploy citizen/admin frontend production builds.\par
+\bullet\tab Configure CORS, API base URLs, uploads/static paths.\par
+\bullet\tab Configure and test SMTP in production.\par
+\bullet\tab Perform full deployment smoke test (auth, reports, notifications, analytics, email).\par
+\bullet\tab Fix deployment-specific bugs and finalize demo readiness.\par
+\par
+\b 7) Deployment Preparation Checklist\b0\par
+\bullet\tab Application runs locally without errors: \b YES\b0\par
+\bullet\tab Database is ready: \b YES\b0\par
+\bullet\tab Environment variables configured: \b YES\b0\par
+\bullet\tab Backend ready for deployment: \b YES\b0\par
+\bullet\tab Frontend build ready: \b YES\b0\par
+\bullet\tab Basic testing completed: \b YES\b0\par
+\par
+}

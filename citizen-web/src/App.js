@@ -1,21 +1,25 @@
 import React from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
 import PrivateRoute from "./components/PrivateRoute";
+import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import MyReports from "./pages/MyReports";
 import CreateReport from "./pages/CreateReport";
 import ReportDetail from "./pages/ReportDetail";
-import { useAuth } from "./context/AuthContext";
-import { getToken } from "./api/client";
+import Profile from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
+import MapPage from "./pages/MapPage";
+import ChangePassword from "./pages/ChangePassword";
+import Notifications from "./pages/Notifications";
+import Help from "./pages/Help";
+import DistrictDiscover from "./pages/DistrictDiscover";
+import ExploreReportDetail from "./pages/ExploreReportDetail";
+import NotFound from "./pages/NotFound";
 import "./App.css";
-
-function Home() {
-  const { user } = useAuth();
-  if (getToken() && user) return <Navigate to="/reports" replace />;
-  return <Navigate to="/login" replace />;
-}
 
 export default function App() {
   return (
@@ -23,6 +27,12 @@ export default function App() {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/help" element={<Help />} />
+      <Route path="/discover" element={<DistrictDiscover />} />
+      <Route path="/map" element={<MapPage />} />
+      <Route path="/explore/reports/:id" element={<ExploreReportDetail />} />
       <Route
         element={
           <PrivateRoute>
@@ -33,8 +43,12 @@ export default function App() {
         <Route path="/reports" element={<MyReports />} />
         <Route path="/reports/new" element={<CreateReport />} />
         <Route path="/reports/:id" element={<ReportDetail />} />
+        <Route path="/notifications" element={<Notifications />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/account/profile" element={<EditProfile />} />
+        <Route path="/account/password" element={<ChangePassword />} />
       </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

@@ -1,6 +1,8 @@
 const Comment = require("../models/Comment");
 const Report = require("../models/Report");
-const { adminCanAccessReport, citizenOwnsReport } = require("../services/reportAccess");
+const User = require("../models/User");
+const Notification = require("../models/Notification");
+const { adminCanAccessReport } = require("../services/reportAccess");
 
 async function loadReportOr404(id) {
   const report = await Report.findById(id);
@@ -8,8 +10,8 @@ async function loadReportOr404(id) {
 }
 
 function canViewComments(user, report) {
-  if (!report) return false;
-  if (user.type === "citizen" && citizenOwnsReport(user, report)) return true;
+  if (!report || !user) return false;
+  if (user.type === "citizen") return true;
   if (user.type === "admin" && adminCanAccessReport(user, report)) return true;
   return false;
 }
@@ -19,8 +21,8 @@ exports.addComment = async (req, res) => {
     const report = await loadReportOr404(req.params.id);
     if (!report) return res.status(404).json({ message: "Report not found" });
 
-    if (req.user.type !== "citizen" || !citizenOwnsReport(req.user, report)) {
-      return res.status(403).json({ message: "Only the report owner can comment" });
+    if (req.user.type !== "citizen") {
+      return res.status(403).json({ message: "Only citizens can comment" });
     }
 
     const { text } = req.body;
@@ -31,6 +33,32 @@ exports.addComment = async (req, res) => {
       userId: req.user.id,
       text: text.trim(),
     });
+
+    const ownerId = report.userId ? String(report.userId) : null;
+    const actorId = String(req.user.id);
+    if (ownerId && ownerId !== actorId) {
+      try {
+        const actor = await User.findById(req.user.id).select("fullName").lean();
+        const name = (actor && actor.fullName) || "Someone";
+        const preview = text.trim().slice(0, 140);
+        const clipped = text.trim().length > 140 ? `${preview}…` : preview;
+        await Notification.create({
+          userId: report.userId,
+          reportId: report._id,
+          type: "REPORT_COMMENT",
+          title: "New comment on your report",
+          message: `${name} commented on "${report.category}": ${clipped}`,
+          data: {
+            status: report.status,
+            previousStatus: "",
+            category: report.category,
+            actorName: name,
+          },
+        });
+      } catch (notifyErr) {
+        console.error("Comment notification failed:", notifyErr.message);
+      }
+    }
 
     const populated = await Comment.findById(comment._id).populate("userId", "fullName");
     res.status(201).json(populated);
@@ -45,7 +73,7 @@ exports.getComments = async (req, res) => {
     if (!report) return res.status(404).json({ message: "Report not found" });
 
     if (!canViewComments(req.user, report)) {
-      return res.status(403).json({ message: "Forbidden" });
+      return res.status(403).json({ message: "Sign in to view comments" });
     }
 
     const comments = await Comment.find({ reportId: req.params.id })

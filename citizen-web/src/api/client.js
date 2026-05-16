@@ -29,7 +29,11 @@ export async function apiFetch(path, options = {}) {
   if (token && !headers.has("Authorization")) {
     headers.set("Authorization", `Bearer ${token}`);
   }
-  const res = await fetch(url, { ...options, headers });
+  const res = await fetch(url, {
+    cache: options.cache ?? "no-store",
+    ...options,
+    headers,
+  });
   const data = await parseJson(res);
   if (!res.ok) {
     const err = new Error(data?.message || res.statusText || "Request failed");

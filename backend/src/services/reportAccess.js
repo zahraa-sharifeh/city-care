@@ -1,11 +1,19 @@
 const mongoose = require("mongoose");
 
+function normalizeId(value) {
+  if (!value) return null;
+  if (typeof value === "object" && value._id) return value._id;
+  return value;
+}
+
 function adminCanAccessReport(user, report) {
   if (!user || user.type !== "admin") return false;
   if (user.role === "SUPER_ADMIN") return true;
   if (user.role === "DISTRICT_ADMIN") {
-    if (!user.districtId || !report.districtId) return false;
-    return String(user.districtId) === String(report.districtId);
+    const userDistrictId = normalizeId(user.districtId);
+    const reportDistrictId = normalizeId(report.districtId);
+    if (!userDistrictId || !reportDistrictId) return false;
+    return String(userDistrictId) === String(reportDistrictId);
   }
   return false;
 }

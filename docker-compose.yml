@@ -1,0 +1,31 @@
+# Self-hosted MongoDB + API (no Atlas). Frontends still on Netlify.
+# Usage: copy backend/.env.example → backend/.env, set JWT_SECRET, then:
+#   docker compose up -d --build
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "127.0.0.1:27017:27017"
+
+  api:
+    build: ./backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      MONGO_URI: mongodb://mongo:27017/smart-city
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      CORS_ORIGIN: ${CORS_ORIGIN:-}
+    volumes:
+      - api_uploads:/app/uploads
+    depends_on:
+      - mongo
+
+volumes:
+  mongo_data:
+  api_uploads:

@@ -25,6 +25,21 @@ const reportSchema = new mongoose.Schema(
       enum: ["PENDING", "IN_PROGRESS", "RESOLVED", "REJECTED"],
       default: "PENDING",
     },
+    priority: {
+      type: String,
+      enum: ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+      default: "MEDIUM",
+    },
+    departmentId: { type: mongoose.Schema.Types.ObjectId, ref: "Department", default: null },
+    duplicateReview: {
+      status: {
+        type: String,
+        enum: ["PENDING_REVIEW", "CONFIRMED_DUPLICATE", "NOT_DUPLICATE"],
+        default: "PENDING_REVIEW",
+      },
+      primaryReportId: { type: mongoose.Schema.Types.ObjectId, ref: "Report", default: null },
+    },
+    statusNote: { type: String, default: "", trim: true, maxlength: 1000 },
   },
   { timestamps: true }
 );

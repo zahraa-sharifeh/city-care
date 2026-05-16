@@ -1,11 +1,16 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import AuthLayout from "../components/AuthLayout";
+import AuthPasswordField from "../components/AuthPasswordField";
+import GoogleCitizenSignIn, { isGoogleSignInConfigured } from "../components/GoogleCitizenSignIn";
+import { handleFormSubmit } from "../utils/formSubmit";
 import "../App.css";
 
 export default function Login() {
-  const { login } = useAuth();
+  const { t } = useTranslation();
+  const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [email, setEmail] = useState("");
@@ -15,47 +20,81 @@ export default function Login() {
 
   const from = location.state?.from || "/reports";
 
-  async function onSubmit(e) {
-    e.preventDefault();
+  async function onSubmit() {
     setError("");
     setLoading(true);
     try {
       await login(email, password);
       navigate(from, { replace: true });
     } catch (err) {
-      setError(err.message || "Login failed");
+      setError(err.message || t("auth.loginFailed"));
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <AuthLayout title="Welcome back" lead="Sign in to submit and track reports in your area.">
-      <form className="auth-form" onSubmit={onSubmit}>
+    <AuthLayout title={t("auth.welcomeBack")} lead={t("auth.loginLead")}>
+      <div className="auth-oauth-panel">
+        {isGoogleSignInConfigured() ? (
+          <>
+            <GoogleCitizenSignIn
+              disabled={loading}
+              onSuccess={async credential => {
+                setError("");
+                await loginWithGoogle(credential);
+                navigate(from, { replace: true });
+              }}
+              onError={msg => setError(msg)}
+            />
+            <div className="auth-divider-or">
+              <span className="auth-divider-or__line" aria-hidden="true" />
+              <span className="auth-divider-or__text">or continue with email</span>
+              <span className="auth-divider-or__line" aria-hidden="true" />
+            </div>
+          </>
+        ) : (
+          <p className="auth-google-hint" role="note">
+            <strong className="auth-google-hint__title">Google sign-in</strong>
+            <span className="auth-google-hint__body">
+              {" "}
+              Add <code>REACT_APP_GOOGLE_CLIENT_ID</code> to <code>citizen-web/.env</code> and <code>GOOGLE_CLIENT_ID</code> to <code>backend/.env</code>, then restart both dev servers.
+            </span>
+          </p>
+        )}
+      </div>
+
+      <form className="auth-form" onSubmit={handleFormSubmit(onSubmit)} noValidate>
         <div className="auth-field">
-          <label htmlFor="email">Email</label>
+          <label htmlFor="email">{t("auth.email")}</label>
           <input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} required autoComplete="username" placeholder="you@example.com" />
         </div>
-        <div className="auth-field">
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-            autoComplete="current-password"
-            placeholder="••••••••"
-          />
-        </div>
+        <AuthPasswordField
+          id="password"
+          label={t("auth.password")}
+          labelExtra={
+            <Link to="/forgot-password" className="auth-inline-link">
+              {t("auth.forgotPassword")}
+            </Link>
+          }
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          required
+          autoComplete="current-password"
+          placeholder="Enter your password"
+          disabled={loading}
+        />
         {error ? <p className="auth-error" role="alert">{error}</p> : null}
         <button type="submit" className="auth-submit" disabled={loading}>
-          {loading ? "Signing in…" : "Sign in"}
+          {loading ? t("auth.signingIn") : t("auth.signInLink")}
         </button>
       </form>
-      <p className="auth-footer">
-        New here? <Link to="/register">Create an account</Link>
-      </p>
+
+      <div className="auth-footer-strip">
+        <p className="auth-footer">
+          {t("auth.noAccount")} <Link to="/register">{t("auth.createOne")}</Link>
+        </p>
+      </div>
     </AuthLayout>
   );
 }
