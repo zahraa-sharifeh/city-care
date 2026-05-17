@@ -964,7 +964,6 @@ th {
   gap: 1.1rem;
   max-width: 100%;
   min-width: 0;
-  overflow-x: clip;
 }
 
 .main:has(.reports-page) {
@@ -1320,13 +1319,7 @@ th {
 }
 
 @media (max-width: 900px) {
-  .main {
-    padding: 1rem;
-  }
-
-  .card {
-    padding: 1rem 1rem;
-  }
+  /* Horizontal page padding is set in styles/mobile.css */
 
   .toolbar > div {
     min-width: 100%;

@@ -1,0 +1,17 @@
+# Render Blueprint — backend API only (rootDir: backend)
+# https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: city-care-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      # Set in Render dashboard (do not commit secrets):
+      # MONGO_URI, JWT_SECRET, CORS_ORIGIN, GOOGLE_CLIENT_ID

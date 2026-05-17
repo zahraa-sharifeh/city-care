@@ -10,7 +10,9 @@
     "analytics": "Analytics",
     "spotlight": "Spotlight",
     "account": "Account",
-    "logout": "Log out"
+    "logout": "Log out",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "roles": {
     "superAdmin": "Super admin",

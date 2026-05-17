@@ -11,6 +11,7 @@ import DistrictSpotlight from "./pages/DistrictSpotlight";
 import { useAdminAuth } from "./context/AdminAuthContext";
 import { getAdminToken } from "./api/client";
 import "./App.css";
+import "./styles/mobile.css";
 
 function Home() {
   const { admin } = useAdminAuth();

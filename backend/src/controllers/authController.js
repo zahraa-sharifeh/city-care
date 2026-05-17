@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Admin = require("../models/Admin");
 const District = require("../models/District");
+const { validatePassword } = require("../utils/passwordPolicy");
 
 function signToken(payload) {
   return jwt.sign(payload, process.env.JWT_SECRET, {
@@ -20,8 +21,9 @@ exports.register = async (req, res) => {
     if (!fullName || !email || !password) {
       return res.status(400).json({ message: "fullName, email, password are required" });
     }
-    if (password.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    const passwordCheck = validatePassword(password);
+    if (!passwordCheck.ok) {
+      return res.status(400).json({ message: passwordCheck.message });
     }
 
     const existing = await User.findOne({ email: email.toLowerCase() });
@@ -158,8 +160,9 @@ exports.changePassword = async (req, res) => {
     if (!currentPassword || !newPassword) {
       return res.status(400).json({ message: "currentPassword and newPassword are required" });
     }
-    if (newPassword.length < 6) {
-      return res.status(400).json({ message: "New password must be at least 6 characters" });
+    const passwordCheck = validatePassword(newPassword);
+    if (!passwordCheck.ok) {
+      return res.status(400).json({ message: passwordCheck.message });
     }
 
     const user = await User.findById(req.user.id);
@@ -215,8 +218,9 @@ exports.resetPassword = async (req, res) => {
     if (!token || !newPassword) {
       return res.status(400).json({ message: "token and newPassword are required" });
     }
-    if (newPassword.length < 6) {
-      return res.status(400).json({ message: "New password must be at least 6 characters" });
+    const passwordCheck = validatePassword(newPassword);
+    if (!passwordCheck.ok) {
+      return res.status(400).json({ message: passwordCheck.message });
     }
 
     const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
@@ -277,7 +281,8 @@ exports.updateMe = async (req, res) => {
       const existing = await User.findOne({ email: nextEmail, _id: { $ne: user._id } });
       if (existing) return res.status(409).json({ message: "Email already in use" });
       if (nextEmail !== user.email && user.googleId) {
-        user.googleId = null;
+        user.set("googleId", undefined);
+        user.markModified("googleId");
       }
       user.email = nextEmail;
     }

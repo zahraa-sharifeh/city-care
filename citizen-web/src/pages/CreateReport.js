@@ -22,6 +22,7 @@ import {
   getLebanonMapOptions,
   isInLebanon,
   LEBANON_CENTER,
+  normalizeGpsCoordinates,
 } from "../utils/lebanonMap";
 import { clearFormDraft, readFormDraft, writeFormDraft } from "../utils/formDraft";
 import { handleFormSubmit } from "../utils/formSubmit";
@@ -115,21 +116,49 @@ export default function CreateReport() {
   const [coordsLookupLoading, setCoordsLookupLoading] = useState(false);
 
   const applyAdminFromCoordinates = useCallback(async (latNum, lngNum) => {
-    const data = await apiFetch(
-      `/api/location/from-coordinates?lat=${encodeURIComponent(latNum)}&lng=${encodeURIComponent(lngNum)}`
-    );
-    const gid = String(data.governorateId);
-    const did = String(data.districtId);
-    const dists = await apiFetch(`/api/districts?governorateId=${encodeURIComponent(gid)}`);
-    suppressDistrictGeocodeUntilRef.current = Date.now() + 1200;
-    setGovernorateId(gid);
-    setDistricts(dists);
-    setDistrictId(did);
-    setLocationDescription(prev => {
-      if (data.displayName) return String(data.displayName).slice(0, 500);
-      return prev;
-    });
-    setCoordsMatchError("");
+    const candidates = [];
+    const primary = normalizeGpsCoordinates(latNum, lngNum);
+    if (primary) candidates.push(primary);
+    const swapped = normalizeGpsCoordinates(lngNum, latNum);
+    if (swapped && !candidates.some(c => c.lat === swapped.lat && c.lng === swapped.lng)) {
+      candidates.push(swapped);
+    }
+    if (candidates.length === 0) {
+      candidates.push({ lat: latNum, lng: lngNum });
+    }
+
+    let lastError = null;
+    for (const { lat, lng } of candidates) {
+      try {
+        const data = await apiFetch(
+          `/api/location/from-coordinates?lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}`
+        );
+        const gid = String(data.governorateId);
+        const did = String(data.districtId);
+        const dists = await apiFetch(`/api/districts?governorateId=${encodeURIComponent(gid)}`);
+        suppressDistrictGeocodeUntilRef.current = Date.now() + 1200;
+        setGovernorateId(gid);
+        setDistricts(dists);
+        setDistrictId(did);
+        setLat(lat.toFixed(6));
+        setLng(lng.toFixed(6));
+        const map = mapRef.current;
+        const marker = markerRef.current;
+        if (map && marker) {
+          const pos = clampLatLng(lat, lng);
+          marker.setLatLng([pos.lat, pos.lng]);
+        }
+        setLocationDescription(prev => {
+          if (data.displayName) return String(data.displayName).slice(0, 500);
+          return prev;
+        });
+        setCoordsMatchError("");
+        return;
+      } catch (err) {
+        lastError = err;
+      }
+    }
+    throw lastError || new Error(t("createReport.coordsMatchError"));
   }, [t]);
 
   const scheduleAdminFromPin = useCallback(
@@ -385,18 +414,25 @@ export default function CreateReport() {
     setGpsLoading(true);
     navigator.geolocation.getCurrentPosition(
       async pos => {
-        const rawLat = pos.coords.latitude;
-        const rawLng = pos.coords.longitude;
-        if (!isInLebanon(rawLat, rawLng)) {
-          setGpsError(t("createReport.gpsOutsideLebanon"));
+        const normalized = normalizeGpsCoordinates(pos.coords.latitude, pos.coords.longitude);
+        if (!normalized) {
+          setGpsLoading(false);
+          setGpsError(t("createReport.gpsUnavailable"));
+          return;
         }
-        const { lat: latNum, lng: lngNum } = clampLatLng(rawLat, rawLng);
-        marker.setLatLng([latNum, lngNum]);
-        map.setView([latNum, lngNum], 17, { animate: true });
-        setLat(latNum.toFixed(6));
-        setLng(lngNum.toFixed(6));
+        const { lat: latNum, lng: lngNum } = normalized;
+        if (!isInLebanon(latNum, lngNum)) {
+          setGpsLoading(false);
+          setGpsError(t("createReport.gpsOutsideLebanon"));
+          return;
+        }
+        const clamped = clampLatLng(latNum, lngNum);
+        marker.setLatLng([clamped.lat, clamped.lng]);
+        map.setView([clamped.lat, clamped.lng], 17, { animate: true });
+        setLat(clamped.lat.toFixed(6));
+        setLng(clamped.lng.toFixed(6));
         try {
-          await applyAdminFromCoordinates(latNum, lngNum);
+          await applyAdminFromCoordinates(clamped.lat, clamped.lng);
         } catch (err) {
           setCoordsMatchError(err.message || t("createReport.gpsDistrictMatchFailed"));
         } finally {

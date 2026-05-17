@@ -213,7 +213,7 @@ export default function Analytics() {
     return values.length ? Math.max(...values) : 0;
   }, [data]);
 
-  const categoryLabel = useMemo(() => key => getCategoryLabelFromValue(key), [i18n.language]);
+  const categoryLabel = key => getCategoryLabelFromValue(key);
 
   const topCategoryLabel = data?.categoryBreakdown?.[0]?.key
     ? getCategoryLabelFromValue(data.categoryBreakdown[0].key)

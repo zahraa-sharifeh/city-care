@@ -1,27 +1,20 @@
-﻿import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import {
-  FaBell,
   FaBullhorn,
-  FaCity,
   FaClipboardList,
-  FaLandmark,
   FaLeaf,
   FaMapMarkedAlt,
-  FaPlusCircle,
-  FaQuestionCircle,
-  FaSignInAlt,
   FaTasks,
-  FaUserPlus,
 } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import { apiFetch, getToken } from "../api/client";
+import CitizenTopBar from "../components/CitizenTopBar";
 import CommunityFiltersPanel from "../components/CommunityFiltersPanel";
 import { resolveIssueCategory } from "../constants/issueCategories";
 import { getStatusLabel } from "../utils/statusLabels";
 import { useRefetchOnFocus } from "../hooks/useRefetchOnFocus";
-import LanguageSwitcher from "../components/LanguageSwitcher";
 
 function FeatureCard({ title, text, icon, accent }) {
   return (
@@ -159,59 +152,11 @@ export default function Home() {
   );
 
   return (
-    <div className="home-page">
-      <div className="home-upper">
-        <header className="home-nav">
-          <Link to="/" className="brand">
-            <span className="brand-mark" aria-hidden="true">
-              <FaCity />
-            </span>
-            {t("brand")}
-          </Link>
-
-          <nav className="home-nav-links">
-            {isAuthenticated ? (
-              <>
-                <Link to="/reports">
-                  <FaClipboardList aria-hidden /> {t("nav.myReports")}
-                </Link>
-                <Link to="/reports/new" className="home-cta">
-                  <FaPlusCircle aria-hidden /> {t("nav.newReport")}
-                </Link>
-                <Link to="/map">
-                  <FaMapMarkedAlt aria-hidden /> {t("nav.map")}
-                </Link>
-                <Link to="/notifications">
-                  <FaBell aria-hidden /> {t("nav.alerts")}
-                </Link>
-                <Link to="/discover">
-                  <FaLandmark aria-hidden /> {t("nav.discover")}
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link to="/login">
-                  <FaSignInAlt aria-hidden /> {t("nav.signIn")}
-                </Link>
-                <Link to="/register" className="home-cta">
-                  <FaUserPlus aria-hidden /> {t("nav.register")}
-                </Link>
-                <Link to="/map">
-                  <FaMapMarkedAlt aria-hidden /> {t("nav.map")}
-                </Link>
-                <Link to="/discover">
-                  <FaLandmark aria-hidden /> {t("nav.discover")}
-                </Link>
-                <Link to="/help">
-                  <FaQuestionCircle aria-hidden /> {t("nav.help")}
-                </Link>
-              </>
-            )}
-          </nav>
-          <LanguageSwitcher />
-        </header>
-
-        <div className="home-upper-inner">
+    <div className="app-shell home-shell">
+      <CitizenTopBar />
+      <div className="home-page">
+        <div className="home-upper">
+          <div className="home-upper-inner">
           <section className="hero-card">
             <div className="hero-card-decor" aria-hidden="true">
               <span className="hero-blob hero-blob--sky" />
@@ -229,8 +174,13 @@ export default function Home() {
                   <FaBullhorn aria-hidden /> {isAuthenticated ? t("home.heroReport") : t("home.heroGetStarted")}
                 </Link>
                 <Link to={isAuthenticated ? "/reports" : "/login"} className="btn-ghost">
-                  <FaClipboardList aria-hidden />{" "}
-                  {isAuthenticated ? t("home.heroMyReports") : t("home.heroHaveAccount")}
+                  {isAuthenticated ? (
+                    <>
+                      <FaClipboardList aria-hidden /> {t("home.heroMyReports")}
+                    </>
+                  ) : (
+                    t("home.heroHaveAccount")
+                  )}
                 </Link>
               </div>
             </div>
@@ -241,10 +191,10 @@ export default function Home() {
               <FeatureCard key={feature.title} {...feature} />
             ))}
           </section>
+          </div>
         </div>
-      </div>
 
-      <div className="home-reports">
+        <div className="home-reports">
         <main className="home-content home-content-reports">
           <section className="home-community" aria-label={t("home.communityTitle")}>
           <h2 className="home-community-title">{t("home.communityTitle")}</h2>
@@ -268,7 +218,7 @@ export default function Home() {
                       <span className="home-community-card-title">{cat.label}</span>
                       <span className="badge home-community-badge">{getStatusLabel(r.status)}</span>
                       <span className="muted home-community-meta">
-                        {r.districtId?.name || t("home.districtFallback")} · {new Date(r.createdAt).toLocaleDateString()}
+                        {r.districtId?.name || t("home.districtFallback")} ? {new Date(r.createdAt).toLocaleDateString()}
                       </span>
                       <span className="home-community-snippet">{r.description}</span>
                     </Link>
@@ -279,6 +229,7 @@ export default function Home() {
           ) : null}
           </section>
         </main>
+        </div>
       </div>
     </div>
   );

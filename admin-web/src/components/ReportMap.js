@@ -59,7 +59,7 @@ export default function ReportMap({
       map.remove();
       mapRef.current = null;
     };
-  }, []);
+  }, [scrollWheelZoom]);
 
   useEffect(() => {
     const map = mapRef.current;

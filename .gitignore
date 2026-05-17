@@ -141,3 +141,6 @@ vite.config.ts.timestamp-*
 # Report uploads (keep empty dir in repo)
 backend/uploads/*
 !backend/uploads/.gitkeep
+
+# Local Netlify folder
+.netlify

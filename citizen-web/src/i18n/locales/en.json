@@ -16,7 +16,10 @@
     "signIn": "Sign in",
     "register": "Register",
     "profile": "Open profile",
-    "logout": "Log out"
+    "logout": "Log out",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "menuLabel": "Main menu"
   },
   "common": {
     "loading": "Loading…",
@@ -79,7 +82,12 @@
     "signingIn": "Signing in…",
     "loginFailed": "Login failed",
     "registerLead": "Join to report issues and follow progress in your district.",
-    "createAccount": "Create account"
+    "createAccount": "Create account",
+    "passwordTooShort": "Password must be at least 8 characters.",
+    "passwordNeedsLower": "Password must include a lowercase letter.",
+    "passwordNeedsUpper": "Password must include an uppercase letter.",
+    "passwordNeedsDigit": "Password must include a number.",
+    "passwordWeak": "Password does not meet the strength requirements."
   },
   "home": {
     "title": "Report issues. Track fixes. Improve your city.",
@@ -395,8 +403,8 @@
     "dividerOr": "or register with email",
     "googleHintTitle": "Google sign-in",
     "fullNamePlaceholder": "Your name",
-    "passwordPlaceholder": "At least 6 characters",
-    "passwordHint": "Use at least 6 characters.",
+    "passwordPlaceholder": "Min. 8 characters",
+    "passwordHint": "Use at least 8 characters with uppercase, lowercase, and a number.",
     "failed": "Registration failed",
     "submitting": "Creating your account…",
     "footerPrompt": "Already have an account?"

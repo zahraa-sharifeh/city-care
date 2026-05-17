@@ -58,7 +58,8 @@ export default function Login() {
             <strong className="auth-google-hint__title">Google sign-in</strong>
             <span className="auth-google-hint__body">
               {" "}
-              Add <code>REACT_APP_GOOGLE_CLIENT_ID</code> to <code>citizen-web/.env</code> and <code>GOOGLE_CLIENT_ID</code> to <code>backend/.env</code>, then restart both dev servers.
+              Set <code>REACT_APP_GOOGLE_CLIENT_ID</code> in <code>citizen-web/.env</code> and <code>GOOGLE_CLIENT_ID</code> in <code>backend/.env</code> (same Web client ID). Stop and restart <code>npm start</code> in both folders — hot reload does not load new <code>REACT_APP_*</code> values. Use the citizen app at{" "}
+              <a href="http://localhost:3001/login">http://localhost:3001</a> and add that URL under Authorized JavaScript origins in Google Cloud Console.
             </span>
           </p>
         )}

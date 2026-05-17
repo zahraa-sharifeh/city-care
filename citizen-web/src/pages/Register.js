@@ -7,6 +7,7 @@ import AuthLayout from "../components/AuthLayout";
 import AuthPasswordField from "../components/AuthPasswordField";
 import GoogleCitizenSignIn, { isGoogleSignInConfigured } from "../components/GoogleCitizenSignIn";
 import { handleFormSubmit } from "../utils/formSubmit";
+import { passwordPolicyMessage, validatePassword } from "../utils/passwordPolicy";
 import "../App.css";
 
 export default function Register() {
@@ -60,6 +61,11 @@ export default function Register() {
 
   async function onSubmit() {
     setError("");
+    const passwordCheck = validatePassword(password);
+    if (!passwordCheck.ok) {
+      setError(passwordPolicyMessage(t, passwordCheck.code));
+      return;
+    }
     setLoading(true);
     try {
       await register({
@@ -101,7 +107,8 @@ export default function Register() {
             <strong className="auth-google-hint__title">{t("register.googleHintTitle")}</strong>
             <span className="auth-google-hint__body">
               {" "}
-              Add <code>REACT_APP_GOOGLE_CLIENT_ID</code> to <code>citizen-web/.env</code> and <code>GOOGLE_CLIENT_ID</code> to <code>backend/.env</code>, then restart both dev servers.
+              Set <code>REACT_APP_GOOGLE_CLIENT_ID</code> in <code>citizen-web/.env</code> and <code>GOOGLE_CLIENT_ID</code> in <code>backend/.env</code> (same Web client ID). Stop and restart <code>npm start</code> in both folders — hot reload does not load new <code>REACT_APP_*</code> values. Use the citizen app at{" "}
+              <a href="http://localhost:3001/register">http://localhost:3001</a> and add that URL under Authorized JavaScript origins in Google Cloud Console.
             </span>
           </p>
         )}
@@ -139,7 +146,7 @@ export default function Register() {
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
-            minLength={6}
+            minLength={8}
             autoComplete="new-password"
             placeholder={t("register.passwordPlaceholder")}
             disabled={loading}

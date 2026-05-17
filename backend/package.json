@@ -8,7 +8,9 @@
     "start": "node server.js",
     "hash-password": "node scripts/hashPassword.js",
     "seed:locations": "node seedLebanonLocations.js",
-    "seed:admins": "node seedAdmins.js"
+    "seed:admins": "node seedAdmins.js",
+    "fix:import": "node scripts/fixImportedRefs.js",
+    "fix:google-id": "node scripts/fixGoogleIdIndex.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

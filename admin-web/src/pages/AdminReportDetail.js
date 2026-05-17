@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -39,8 +39,8 @@ function duplicateReviewLabel(report, t) {
 
 export default function AdminReportDetail() {
   const { t, i18n } = useTranslation();
-  const statusOptions = useMemo(() => getStatusOptions(), [i18n.language]);
-  const priorityOptions = useMemo(() => getPriorityOptions(), [i18n.language]);
+  const statusOptions = getStatusOptions();
+  const priorityOptions = getPriorityOptions();
   const { id } = useParams();
   const navigate = useNavigate();
   const [report, setReport] = useState(null);
@@ -81,7 +81,7 @@ export default function AdminReportDetail() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  const defaultShareMessage = useMemo(() => (report ? buildReportShareMessage(report) : ""), [report, i18n.language]);
+  const defaultShareMessage = report ? buildReportShareMessage(report) : "";
 
   useEffect(() => {
     if (!report || shareMessageTouched) return;

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useLocation } from "react-router-dom";
-import { FaEnvelope, FaLock, FaSignInAlt } from "react-icons/fa";
+import { FaEnvelope, FaLock } from "react-icons/fa";
 import { useAdminAuth } from "../context/AdminAuthContext";
 import AuthLayout from "../components/AuthLayout";
 import { handleFormSubmit } from "../utils/formSubmit";
@@ -72,7 +72,6 @@ export default function Login() {
           </p>
         ) : null}
         <button type="submit" className="auth-submit" disabled={loading}>
-          <FaSignInAlt aria-hidden className={loading ? "auth-submit-spin" : undefined} />
           {loading ? t("auth.signingIn") : t("auth.signIn")}
         </button>
       </form>

@@ -10,7 +10,9 @@
     "analytics": "التحليلات",
     "spotlight": "الأضواء",
     "account": "الحساب",
-    "logout": "تسجيل الخروج"
+    "logout": "تسجيل الخروج",
+    "openMenu": "فتح القائمة",
+    "closeMenu": "إغلاق القائمة"
   },
   "roles": {
     "superAdmin": "مسؤول عام",

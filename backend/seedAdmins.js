@@ -109,6 +109,11 @@ async function seed() {
   }
 
   console.log("Done. Districts processed:", districts.length, "Created:", created, "Skipped:", skipped);
+  console.log("");
+  console.log("--- Admin login (use on admin-web) ---");
+  console.log("Super admin email:", EXTRA_ADMINS[0].email);
+  console.log("Password:", password, "(from SEED_ADMIN_PASSWORD or default ChangeMe123!)");
+  console.log("District admins: admin.<governorate-slug>.<district-slug>@local.test — same password.");
   await mongoose.disconnect();
 }
 

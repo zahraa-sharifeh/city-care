@@ -2564,6 +2564,20 @@ button:disabled {
 }
 
 /* —— Public home —— */
+.home-shell {
+  min-height: 100vh;
+  background: var(--c-paper);
+}
+
+.home-shell .home-page {
+  flex: 1;
+  min-height: 0;
+}
+
+.home-shell .home-upper-inner {
+  padding-top: 1.35rem;
+}
+
 .home-page {
   --home-sky: #5b9ec4;
   --home-sky-soft: #e5f2fa;

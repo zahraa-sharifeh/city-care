@@ -6,6 +6,8 @@
 [build.environment]
   NODE_VERSION = "20"
   NPM_FLAGS = "--legacy-peer-deps"
+  # CRA treats ESLint warnings as errors when CI=true (Netlify default)
+  CI = "false"
 
 # React Router (SPA)
 [[redirects]]

@@ -33,9 +33,9 @@ function duplicateModifier(status) {
 
 export default function ReportsList() {
   const { t, i18n } = useTranslation();
-  const statusOptions = useMemo(() => getStatusOptions(), [i18n.language]);
-  const priorityOptions = useMemo(() => getPriorityOptions(), [i18n.language]);
-  const categoryOptions = useMemo(() => getIssueCategorySelectOptions(), [i18n.language]);
+  const statusOptions = getStatusOptions();
+  const priorityOptions = getPriorityOptions();
+  const categoryOptions = getIssueCategorySelectOptions();
   const navigate = useNavigate();
   const { admin } = useAdminAuth();
   const [status, setStatus] = useState("");

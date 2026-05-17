@@ -1,4 +1,14 @@
-const base = () => (process.env.REACT_APP_API_URL || "http://localhost:5000").replace(/\/$/, "");
+export const getApiBase = () => (process.env.REACT_APP_API_URL || "http://localhost:5000").replace(/\/$/, "");
+
+const base = getApiBase;
+
+function networkErrorMessage() {
+  const api = getApiBase();
+  if (/localhost|127\.0\.0\.1/.test(api)) {
+    return "Cannot reach the API from this device. Set REACT_APP_API_URL to your public API URL on Netlify, then redeploy.";
+  }
+  return `Cannot reach the server (${api}). Check your connection and try again.`;
+}
 
 export function getAdminToken() {
   return localStorage.getItem("admin_token");
@@ -29,7 +39,12 @@ export async function apiFetch(path, options = {}) {
   if (token && !headers.has("Authorization")) {
     headers.set("Authorization", `Bearer ${token}`);
   }
-  const res = await fetch(url, { ...options, headers });
+  let res;
+  try {
+    res = await fetch(url, { ...options, headers });
+  } catch {
+    throw new Error(networkErrorMessage());
+  }
   const data = await parseJson(res);
   if (!res.ok) {
     const err = new Error(data?.message || res.statusText || "Request failed");

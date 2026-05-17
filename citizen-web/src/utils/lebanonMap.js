@@ -39,6 +39,32 @@ export function isInLebanon(lat, lng) {
   return LEBANON_BOUNDS.contains([la, ln]);
 }
 
+/** Backend uses a slightly tighter box; keep GPS normalization aligned with it. */
+function isRoughlyInLebanon(lat, lng) {
+  return lat >= 33.02 && lat <= 34.75 && lng >= 34.92 && lng <= 36.65;
+}
+
+/**
+ * Fix swapped or mis-labelled lat/lng from mobile Geolocation before map/reverse lookup.
+ * @returns {{ lat: number, lng: number } | null}
+ */
+export function normalizeGpsCoordinates(rawLat, rawLng) {
+  let lat = Number(rawLat);
+  let lng = Number(rawLng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+
+  if (Math.abs(lat) > 90 && Math.abs(lng) <= 90) {
+    [lat, lng] = [lng, lat];
+  }
+
+  if (!isRoughlyInLebanon(lat, lng) && isRoughlyInLebanon(lng, lat)) {
+    [lat, lng] = [lng, lat];
+  }
+
+  if (Math.abs(lat) > 90 || Math.abs(lng) > 180) return null;
+  return { lat, lng };
+}
+
 /**
  * Fit the map to report/pin points, clamped to Lebanon. Falls back to country view.
  * @param {L.Map} map

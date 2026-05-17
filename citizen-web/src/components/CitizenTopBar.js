@@ -2,6 +2,7 @@ import React from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
+  FaBars,
   FaBell,
   FaCity,
   FaClipboardList,
@@ -9,15 +10,17 @@ import {
   FaMapMarkedAlt,
   FaPlusCircle,
   FaQuestionCircle,
-  FaSignInAlt,
   FaSignOutAlt,
+  FaTimes,
   FaUserCircle,
 } from "react-icons/fa";
 import { getToken } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import { useNotifications } from "../context/NotificationsContext";
+import { useMobileNav } from "../hooks/useMobileNav";
 import NavNotificationBadge from "./NavNotificationBadge";
 import LanguageSwitcher from "./LanguageSwitcher";
+import TopbarDrawerClose from "./TopbarDrawerClose";
 import "../App.css";
 
 export default function CitizenTopBar() {
@@ -25,16 +28,23 @@ export default function CitizenTopBar() {
   const { user, logout } = useAuth();
   const authed = Boolean(getToken() && user);
   const { unreadCount } = useNotifications();
+  const { menuOpen, toggleMenu, closeMenu } = useMobileNav();
 
   return (
-    <header className="topbar">
-      <Link to="/" className="brand">
+    <header className={`topbar${menuOpen ? " topbar--menu-open" : ""}`}>
+      <Link to="/" className="brand" onClick={closeMenu}>
         <span className="brand-mark" aria-hidden="true">
           <FaCity />
         </span>
         {t("brand")}
       </Link>
-      <nav className="topbar-nav">
+
+      {menuOpen ? (
+        <button type="button" className="topbar-backdrop" aria-label={t("nav.closeMenu")} onClick={closeMenu} tabIndex={-1} />
+      ) : null}
+
+      <nav id="citizen-topbar-nav" className="topbar-nav" onClick={closeMenu}>
+        <TopbarDrawerClose onClose={closeMenu} label={t("nav.closeMenu")} />
         {authed ? (
           <>
             <NavLink to="/reports" className={({ isActive }) => `top-link ${isActive ? "active" : ""}`}>
@@ -69,7 +79,7 @@ export default function CitizenTopBar() {
         ) : (
           <>
             <NavLink to="/login" className={({ isActive }) => `top-link ${isActive ? "active" : ""}`}>
-              <FaSignInAlt aria-hidden /> {t("nav.signIn")}
+              {t("nav.signIn")}
             </NavLink>
             <NavLink to="/register" className={({ isActive }) => `top-link ${isActive ? "active" : ""}`}>
               <FaPlusCircle aria-hidden /> {t("nav.register")}
@@ -85,19 +95,49 @@ export default function CitizenTopBar() {
             </NavLink>
           </>
         )}
+        {authed ? (
+          <div className="topbar-nav-footer mobile-only">
+            <LanguageSwitcher />
+            <div className="topbar-nav-footer-actions">
+              <Link to="/profile" className="icon-action" aria-label={t("nav.profile")}>
+                <FaUserCircle aria-hidden />
+              </Link>
+              <button type="button" className="secondary icon-action logout-action" onClick={logout} aria-label={t("nav.logout")}>
+                <FaSignOutAlt aria-hidden />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="topbar-nav-footer mobile-only">
+            <LanguageSwitcher />
+          </div>
+        )}
       </nav>
-      <div className="topbar-actions">
-        <LanguageSwitcher />
+
+      <div className="topbar-aside">
+        <div className="desktop-only">
+          <LanguageSwitcher />
+        </div>
         {authed ? (
           <>
-            <Link to="/profile" className="icon-action" aria-label={t("nav.profile")}>
+            <Link to="/profile" className="icon-action desktop-only" aria-label={t("nav.profile")}>
               <FaUserCircle aria-hidden />
             </Link>
-            <button type="button" className="secondary icon-action logout-action" onClick={logout} aria-label={t("nav.logout")}>
+            <button type="button" className="secondary icon-action logout-action desktop-only" onClick={logout} aria-label={t("nav.logout")}>
               <FaSignOutAlt aria-hidden />
             </button>
           </>
         ) : null}
+        <button
+          type="button"
+          className={`topbar-menu-btn mobile-only${menuOpen ? " topbar-menu-btn--open" : ""}`}
+          aria-expanded={menuOpen}
+          aria-controls="citizen-topbar-nav"
+          aria-label={menuOpen ? t("nav.closeMenu") : t("nav.openMenu")}
+          onClick={toggleMenu}
+        >
+          {menuOpen ? <FaTimes aria-hidden /> : <FaBars aria-hidden />}
+        </button>
       </div>
     </header>
   );

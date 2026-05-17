@@ -5,6 +5,22 @@ function isRoughlyInLebanon(lat, lng) {
   return lat >= 33.02 && lat <= 34.75 && lng >= 34.92 && lng <= 36.65;
 }
 
+/** Correct common mobile GPS axis swaps before bounds / Nominatim checks. */
+function normalizeIncomingCoords(lat, lng) {
+  let la = Number(lat);
+  let ln = Number(lng);
+  if (!Number.isFinite(la) || !Number.isFinite(ln)) return null;
+
+  if (Math.abs(la) > 90 && Math.abs(ln) <= 90) {
+    [la, ln] = [ln, la];
+  }
+  if (!isRoughlyInLebanon(la, ln) && isRoughlyInLebanon(ln, la)) {
+    [la, ln] = [ln, la];
+  }
+  if (Math.abs(la) > 90 || Math.abs(ln) > 180) return null;
+  return { lat: la, lng: ln };
+}
+
 function normalize(s) {
   return String(s || "")
     .toLowerCase()
@@ -54,13 +70,49 @@ const DISTRICT_ALIASES = [
   ["sour", "Sour"],
   ["jezzine", "Jezzine"],
   ["nabatiyeh", "Nabatiyeh"],
+  ["matn", "Matn"],
+  ["baabda", "Baabda"],
+  ["koura", "Koura"],
+  ["akkar", "Akkar"],
+  ["hermel", "Hermel"],
+];
+
+const GOVERNORATE_ALIASES = [
+  ["mount lebanon", "Mount Lebanon"],
+  ["mohafazat mount lebanon", "Mount Lebanon"],
+  ["qadaa mount lebanon", "Mount Lebanon"],
+  ["north lebanon", "North"],
+  ["mohafazat north", "North"],
+  ["south lebanon", "South"],
+  ["mohafazat south", "South"],
+  ["beqaa", "Beqaa"],
+  ["bekaa", "Beqaa"],
+  ["baalbek hermel", "Baalbek-Hermel"],
+  ["baalbek-hermel", "Baalbek-Hermel"],
+  ["nabatiye", "Nabatiyeh"],
+  ["mohafazat nabatiyeh", "Nabatiyeh"],
+  ["beyrouth", "Beirut"],
+  ["beirut governorate", "Beirut"],
 ];
 
 /** OSM address + map name tokens — exact district name match, avoids "Baalbek" inside "Baalbek-Hermel" slug. */
 function collectLocalityTokens(nomi) {
   const set = new Set();
   const addr = nomi.address || {};
-  const keys = ["village", "town", "city", "municipality", "county", "city_district", "suburb", "hamlet", "neighbourhood", "quarter"];
+  const keys = [
+    "village",
+    "town",
+    "city",
+    "municipality",
+    "county",
+    "state_district",
+    "city_district",
+    "suburb",
+    "hamlet",
+    "neighbourhood",
+    "quarter",
+    "road",
+  ];
   for (const k of keys) {
     const v = addr[k];
     if (typeof v === "string" && v.trim()) set.add(normalize(v.trim()));
@@ -122,7 +174,51 @@ function buildHaystack(nomi) {
 /**
  * @returns {Promise<{ governorateId: import('mongoose').Types.ObjectId, districtId: import('mongoose').Types.ObjectId, governorateName: string, districtName: string, displayName: string } | null>}
  */
+function resolveGovernorateName(hay, rows) {
+  const govNames = [...new Set(rows.map(r => r.governorateName))].sort((a, b) => b.length - a.length);
+  for (const name of govNames) {
+    const n = normalize(name);
+    if (n.length >= 3 && hay.includes(n)) return name;
+  }
+  const aliasesSorted = [...GOVERNORATE_ALIASES].sort((a, b) => b[0].length - a[0].length);
+  for (const [fragment, canonical] of aliasesSorted) {
+    const nf = normalize(fragment);
+    if (nf.length >= 3 && hay.includes(nf)) return canonical;
+  }
+  return null;
+}
+
+function fallbackMatchByGovernorate(nomi, rows) {
+  const hay = buildHaystack(nomi);
+  if (!hay) return null;
+
+  const govName = resolveGovernorateName(hay, rows);
+  if (!govName) return null;
+
+  const inGov = rows.filter(r => r.governorateName === govName);
+  if (inGov.length === 0) return null;
+
+  const tokens = collectLocalityTokens(nomi);
+  for (const token of tokens) {
+    const exact = inGov.filter(r => normalize(r.districtName) === token);
+    if (exact.length === 1) return exact[0];
+  }
+
+  for (const row of inGov) {
+    const nd = normalize(row.districtName);
+    if (nd.length >= 2 && hay.includes(nd)) return row;
+  }
+
+  if (inGov.length === 1) return inGov[0];
+
+  return null;
+}
+
 async function resolveAdminFromLatLng(lat, lng) {
+  const coords = normalizeIncomingCoords(lat, lng);
+  if (!coords) return null;
+  lat = coords.lat;
+  lng = coords.lng;
   if (!isRoughlyInLebanon(lat, lng)) return null;
 
   let nomi;
@@ -198,7 +294,10 @@ async function resolveAdminFromLatLng(lat, lng) {
     hits.push(row);
   }
 
-  if (hits.length === 0) return null;
+  if (hits.length === 0) {
+    const fallback = fallbackMatchByGovernorate(nomi, rows);
+    return fallback ? resultFromRow(fallback) : null;
+  }
 
   if (hits.length === 1) {
     return resultFromRow(hits[0]);
@@ -210,4 +309,4 @@ async function resolveAdminFromLatLng(lat, lng) {
   return resultFromRow(pick);
 }
 
-module.exports = { resolveAdminFromLatLng, isRoughlyInLebanon };
+module.exports = { resolveAdminFromLatLng, isRoughlyInLebanon, normalizeIncomingCoords };

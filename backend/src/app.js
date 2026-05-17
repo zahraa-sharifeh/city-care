@@ -1,6 +1,8 @@
 const path = require("path");
 const express = require("express");
 const cors = require("cors");
+const mongoose = require("mongoose");
+const { getMongoTarget } = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
@@ -27,7 +29,19 @@ app.use(
 app.use(express.json());
 
 app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", message: "Smart City API running" });
+  const configured = getMongoTarget();
+  const connected = mongoose.connection.readyState === 1;
+  res.json({
+    status: "ok",
+    message: "Smart City API running",
+    googleSignIn: Boolean((process.env.GOOGLE_CLIENT_ID || "").trim()),
+    mongo: {
+      connected,
+      host: connected ? mongoose.connection.host : configured.host,
+      database: connected ? mongoose.connection.name : configured.database,
+      isLocal: configured.isLocal,
+    },
+  });
 });
 
 app.use("/api/auth", authRoutes);

@@ -16,7 +16,10 @@
     "signIn": "تسجيل الدخول",
     "register": "إنشاء حساب",
     "profile": "فتح الملف الشخصي",
-    "logout": "تسجيل الخروج"
+    "logout": "تسجيل الخروج",
+    "openMenu": "فتح القائمة",
+    "closeMenu": "إغلاق القائمة",
+    "menuLabel": "القائمة الرئيسية"
   },
   "common": {
     "loading": "جاري التحميل…",
@@ -79,7 +82,12 @@
     "signingIn": "جاري تسجيل الدخول…",
     "loginFailed": "فشل تسجيل الدخول",
     "registerLead": "انضم للإبلاغ عن المشاكل ومتابعة التقدم في قضائك.",
-    "createAccount": "إنشاء حساب"
+    "createAccount": "إنشاء حساب",
+    "passwordTooShort": "يجب أن تكون كلمة المرور 8 أحرف على الأقل.",
+    "passwordNeedsLower": "يجب أن تتضمن كلمة المرور حرفاً صغيراً.",
+    "passwordNeedsUpper": "يجب أن تتضمن كلمة المرور حرفاً كبيراً.",
+    "passwordNeedsDigit": "يجب أن تتضمن كلمة المرور رقماً.",
+    "passwordWeak": "كلمة المرور لا تستوفي متطلبات القوة."
   },
   "home": {
     "title": "أبلغ عن المشاكل. تابع الإصلاحات. حسّن مدينتك.",
@@ -395,8 +403,8 @@
     "dividerOr": "أو التسجيل بالبريد الإلكتروني",
     "googleHintTitle": "تسجيل الدخول عبر Google",
     "fullNamePlaceholder": "اسمك",
-    "passwordPlaceholder": "6 أحرف على الأقل",
-    "passwordHint": "استخدم 6 أحرف على الأقل.",
+    "passwordPlaceholder": "8 أحرف على الأقل",
+    "passwordHint": "استخدم 8 أحرف على الأقل مع حرف كبير وصغير ورقم.",
     "failed": "فشل التسجيل",
     "submitting": "جاري إنشاء حسابك…",
     "footerPrompt": "لديك حساب بالفعل؟"

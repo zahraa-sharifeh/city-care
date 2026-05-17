@@ -20,6 +20,7 @@ import DistrictDiscover from "./pages/DistrictDiscover";
 import ExploreReportDetail from "./pages/ExploreReportDetail";
 import NotFound from "./pages/NotFound";
 import "./App.css";
+import "./styles/mobile.css";
 
 export default function App() {
   return (
