@@ -5,6 +5,7 @@ const { adminCanAccessReport, parseObjectId } = require("../services/reportAcces
 const { sendStatusEmail } = require("../services/mailer");
 const { findDuplicateCandidates } = require("../services/duplicateDetection");
 const { buildReportsPdfBuffer, buildSingleReportPdfBuffer } = require("../services/reportsExportPdf");
+const { normalizeReportImages, normalizeReportsList, resolveUploadUrl } = require("../utils/uploadUrls");
 
 const STATUSES = ["PENDING", "IN_PROGRESS", "RESOLVED", "REJECTED"];
 const PRIORITIES = ["LOW", "MEDIUM", "HIGH", "CRITICAL"];
@@ -150,7 +151,7 @@ function describeExportFilters(query) {
   return parts;
 }
 
-function mapRowForExport(r) {
+function mapRowForExport(r, req) {
   const coords = r.location && Array.isArray(r.location.coordinates) ? r.location.coordinates : [];
   const lng = coords[0];
   const lat = coords[1];
@@ -172,7 +173,7 @@ function mapRowForExport(r) {
     note: r.statusNote || "",
     id: String(r._id),
     mapLink: hasCoords ? `https://www.google.com/maps?q=${lat},${lng}` : "",
-    imageLinks: Array.isArray(r.images) ? r.images.filter(Boolean) : [],
+    imageLinks: Array.isArray(r.images) ? r.images.map(url => resolveUploadUrl(url, req)).filter(Boolean) : [],
   };
 }
 
@@ -201,7 +202,13 @@ exports.listReports = async (req, res) => {
       Report.countDocuments(filter),
     ]);
 
-    res.json({ items, total, page, limit, pages: Math.ceil(total / limit) || 1 });
+    res.json({
+      items: normalizeReportsList(items, req),
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit) || 1,
+    });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
@@ -224,7 +231,7 @@ exports.exportReportsPdf = async (req, res) => {
       .populate("departmentId", "name")
       .lean();
 
-    const mapped = rows.map(mapRowForExport);
+    const mapped = rows.map(r => mapRowForExport(r, req));
     const pdf = await buildReportsPdfBuffer({
       rows: mapped,
       generatedAt: new Date(),
@@ -256,7 +263,7 @@ exports.exportSingleReportPdf = async (req, res) => {
       return res.status(403).json({ message: "Forbidden" });
     }
 
-    const row = mapRowForExport(report);
+    const row = mapRowForExport(report, req);
     const pdf = await buildSingleReportPdfBuffer({ row, generatedAt: new Date() });
     const safeCategory = String(report.category || "report")
       .replace(/[^\w\s-]/g, "")
@@ -292,7 +299,7 @@ exports.getReport = async (req, res) => {
 
     const scope = buildAdminScopeFilter(req.user) || {};
     const duplicateCandidates = await findDuplicateCandidates(report, scope);
-    res.json({ ...report.toObject(), duplicateCandidates });
+    res.json({ ...normalizeReportImages(report, req), duplicateCandidates });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }

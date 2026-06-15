@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FaArrowLeft, FaCalendarAlt, FaClipboardList, FaGlobe, FaHome, FaMapMarkerAlt, FaMapMarkedAlt } from "react-icons/fa";
 import { apiFetch } from "../api/client";
+import { resolveUploadUrls } from "../utils/uploadUrl";
 import { getStatusLabel } from "../utils/statusLabels";
 import { resolveIssueCategory } from "../constants/issueCategories";
 import CitizenTopBar from "../components/CitizenTopBar";
@@ -81,8 +82,9 @@ export default function ExploreReportDetail() {
 
   const cat = resolveIssueCategory(report.category);
   const statusClass = statusModifier(report.status);
-  const locationLine = [report.governorateId?.name, report.districtId?.name].filter(Boolean).join(" · ");
+  const locationLine = [report.governorateId?.name, report.districtId?.name].filter(Boolean).join(" | ");
   const isOwnReport = Boolean(report.isMine);
+  const images = resolveUploadUrls(report.images);
 
   return (
     <Shell>
@@ -169,14 +171,14 @@ export default function ExploreReportDetail() {
             </aside>
           ) : null}
 
-          {report.images?.length > 0 ? (
+          {images.length > 0 ? (
             <section
               className="report-detail-section"
               aria-label={isOwnReport ? t("exploreReport.uploadsOwn") : t("exploreReport.uploadsPublic")}
             >
               <h2 className="report-detail-section-title">{t("exploreReport.photos")}</h2>
               <div className="report-detail-gallery">
-                {report.images.map((src, i) => (
+                {images.map((src, i) => (
                   <a key={src} href={src} target="_blank" rel="noreferrer" className="report-detail-gallery-item">
                     <img src={src} alt={t("exploreReport.uploadAlt", { index: i + 1 })} loading="lazy" />
                   </a>

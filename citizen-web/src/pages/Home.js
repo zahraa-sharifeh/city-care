@@ -218,7 +218,7 @@ export default function Home() {
                       <span className="home-community-card-title">{cat.label}</span>
                       <span className="badge home-community-badge">{getStatusLabel(r.status)}</span>
                       <span className="muted home-community-meta">
-                        {r.districtId?.name || t("home.districtFallback")} ? {new Date(r.createdAt).toLocaleDateString()}
+                        {r.districtId?.name || t("home.districtFallback")} • {new Date(r.createdAt).toLocaleDateString()}
                       </span>
                       <span className="home-community-snippet">{r.description}</span>
                     </Link>

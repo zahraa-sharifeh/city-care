@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>City Care — System Architecture</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 40px;
+    }
+
+    .canvas {
+      background: #fff;
+      border: 1px solid #dde3ea;
+      border-radius: 12px;
+      padding: 48px 56px 40px;
+      width: 920px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.08);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 700;
+      color: #1a2332;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 13px;
+      color: #6b7a8d;
+      margin-bottom: 36px;
+    }
+
+    .diagram {
+      position: relative;
+      width: 100%;
+    }
+
+    /* ── rows ── */
+    .row {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-bottom: 0;
+    }
+
+    .row-label {
+      text-align: center;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #9aa8b8;
+      margin-bottom: 10px;
+    }
+
+    /* ── boxes ── */
+    .box {
+      border-radius: 10px;
+      padding: 16px 20px;
+      text-align: center;
+      min-width: 200px;
+      position: relative;
+    }
+
+    .box .title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .box .tech {
+      font-size: 11px;
+      opacity: .85;
+    }
+
+    .box .port {
+      font-size: 10px;
+      opacity: .7;
+      margin-top: 4px;
+    }
+
+    /* colors */
+    .frontend {
+      background: #e8f4fd;
+      border: 2px solid #2196f3;
+      color: #1565c0;
+    }
+
+    .api {
+      background: #e8f5e9;
+      border: 2px solid #43a047;
+      color: #2e7d32;
+      min-width: 260px;
+    }
+
+    .db {
+      background: #fff3e0;
+      border: 2px solid #fb8c00;
+      color: #e65100;
+    }
+
+    .storage {
+      background: #fce4ec;
+      border: 2px solid #e91e63;
+      color: #c2185b;
+      min-width: 160px;
+    }
+
+    .external {
+      background: #f3e5f5;
+      border: 2px solid #9c27b0;
+      color: #6a1b9a;
+      min-width: 140px;
+      padding: 12px 14px;
+    }
+
+    .external .title { font-size: 12px; }
+    .external .tech  { font-size: 10px; }
+
+    /* ── arrows (SVG overlay) ── */
+    .arrows {
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* ── spacer between tiers ── */
+    .tier { margin-bottom: 8px; }
+
+    .tier-gap { height: 12px; }
+
+    /* external services row */
+    .ext-row {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1.5px dashed #dde3ea;
+    }
+
+    .ext-label {
+      width: 100%;
+      text-align: center;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #9aa8b8;
+      margin-bottom: 12px;
+    }
+
+    .legend {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 28px;
+      font-size: 11px;
+      color: #6b7a8d;
+    }
+
+    .legend span::before {
+      content: "";
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      margin-right: 5px;
+      vertical-align: middle;
+      border: 2px solid;
+    }
+
+    .legend .l-fe::before { background: #e8f4fd; border-color: #2196f3; }
+    .legend .l-api::before { background: #e8f5e9; border-color: #43a047; }
+    .legend .l-db::before  { background: #fff3e0; border-color: #fb8c00; }
+    .legend .l-ext::before { background: #f3e5f5; border-color: #9c27b0; }
+
+    .note {
+      text-align: center;
+      font-size: 10px;
+      color: #9aa8b8;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas">
+    <h1>City Care — System Architecture</h1>
+    <p class="subtitle">Three-tier web application · Production deployment</p>
+
+    <div class="diagram">
+
+      <!-- TIER 1: Frontends -->
+      <div class="tier">
+        <div class="row-label">Presentation Layer — React SPAs (Netlify)</div>
+        <div class="row">
+          <div class="box frontend">
+            <div class="title">citizen-web</div>
+            <div class="tech">React 19 · Leaflet · i18next</div>
+            <div class="port">citycarelb.netlify.app</div>
+          </div>
+          <div class="box frontend">
+            <div class="title">admin-web</div>
+            <div class="tech">React 19 · Leaflet · i18next</div>
+            <div class="port">citycareadminlb.netlify.app</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Arrows: frontends → API -->
+      <svg class="arrows" width="808" height="56" viewBox="0 0 808 56">
+        <defs>
+          <marker id="ah" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#546e7a"/>
+          </marker>
+        </defs>
+        <!-- left frontend → API -->
+        <line x1="202" y1="4"  x2="404" y2="48" stroke="#546e7a" stroke-width="1.8" marker-end="url(#ah)"/>
+        <!-- right frontend → API -->
+        <line x1="606" y1="4"  x2="404" y2="48" stroke="#546e7a" stroke-width="1.8" marker-end="url(#ah)"/>
+        <!-- labels -->
+        <text x="280" y="30" font-size="10" fill="#78909c" font-family="Segoe UI,sans-serif">HTTPS / REST / JSON</text>
+        <text x="490" y="30" font-size="10" fill="#78909c" font-family="Segoe UI,sans-serif">JWT Bearer Token</text>
+      </svg>
+
+      <!-- TIER 2: API -->
+      <div class="tier">
+        <div class="row-label">Application Layer — REST API (Render)</div>
+        <div class="row">
+          <div class="box api">
+            <div class="title">Express 5 REST API</div>
+            <div class="tech">Node.js · Mongoose · Multer · JWT · bcrypt</div>
+            <div class="port">city-care-7ygl.onrender.com</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Arrows: API → DB + Storage -->
+      <svg class="arrows" width="808" height="56" viewBox="0 0 808 56">
+        <defs>
+          <marker id="ah2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#546e7a"/>
+          </marker>
+        </defs>
+        <line x1="340" y1="4"  x2="202" y2="48" stroke="#546e7a" stroke-width="1.8" marker-end="url(#ah2)"/>
+        <line x1="468" y1="4"  x2="606" y2="48" stroke="#546e7a" stroke-width="1.8" marker-end="url(#ah2)"/>
+        <text x="230" y="30" font-size="10" fill="#78909c" font-family="Segoe UI,sans-serif">Mongoose ODM</text>
+        <text x="490" y="30" font-size="10" fill="#78909c" font-family="Segoe UI,sans-serif">Multer /uploads</text>
+      </svg>
+
+      <!-- TIER 3: Data -->
+      <div class="tier">
+        <div class="row-label">Data Layer</div>
+        <div class="row">
+          <div class="box db">
+            <div class="title">MongoDB Atlas</div>
+            <div class="tech">Users · Reports · Comments</div>
+            <div class="tech">Notifications · Districts · Departments</div>
+            <div class="port">GeoJSON 2dsphere index</div>
+          </div>
+          <div class="box storage">
+            <div class="title">File Storage</div>
+            <div class="tech">Report photos</div>
+            <div class="port">/uploads on API server</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- External services -->
+      <div class="ext-row">
+        <div class="ext-label">External Services</div>
+        <div class="box external">
+          <div class="title">OpenStreetMap</div>
+          <div class="tech">Map tiles (Leaflet)</div>
+        </div>
+        <div class="box external">
+          <div class="title">Nominatim</div>
+          <div class="tech">Reverse geocoding</div>
+        </div>
+        <div class="box external">
+          <div class="title">Google OAuth</div>
+          <div class="tech">Optional sign-in</div>
+        </div>
+        <div class="box external">
+          <div class="title">SMTP Server</div>
+          <div class="tech">Optional e-mail alerts</div>
+        </div>
+      </div>
+
+    </div><!-- /diagram -->
+
+    <div class="legend">
+      <span class="l-fe">Frontend (React SPA)</span>
+      <span class="l-api">Backend (REST API)</span>
+      <span class="l-db">Database / Storage</span>
+      <span class="l-ext">External Service</span>
+    </div>
+
+    <p class="note">Screenshot this page and paste into your report as Figure: System Architecture of City Care</p>
+  </div>
+</body>
+</html>

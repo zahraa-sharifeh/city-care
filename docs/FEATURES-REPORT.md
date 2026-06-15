@@ -187,5 +187,6 @@ Public: `/api/health`, governorates, districts. Citizen and admin routes as moun
 ## 13. Related documentation
 
 - [API.md](./API.md) — HTTP contract
+- [ARABIC-I18N.md](./ARABIC-I18N.md) — English/Arabic UI, RTL, locale files
 - [mongodb-admins.md](./mongodb-admins.md) — admin accounts
 - [README.md](../README.md) — run instructions and status wording

@@ -12,6 +12,7 @@ import {
   FaUser,
 } from "react-icons/fa";
 import { apiFetch, apiFetchBlob } from "../api/client";
+import { resolveUploadUrls } from "../utils/uploadUrl";
 import { getCategoryLabelFromValue, resolveIssueCategory } from "../constants/issueCategories";
 import { getStatusLabel, getStatusOptions } from "../utils/statusLabels";
 import { getPriorityLabel, getPriorityOptions } from "../utils/priorityLabels";
@@ -228,7 +229,7 @@ export default function AdminReportDetail() {
   const cat = resolveIssueCategory(report.category);
   const statusClass = statusModifier(report.status);
   const locationLine = [report.governorateId?.name, report.districtId?.name].filter(Boolean).join(" · ");
-  const images = report.images || [];
+  const images = resolveUploadUrls(report.images);
   const isFormDirty =
     status !== report.status ||
     priority !== (report.priority || "MEDIUM") ||

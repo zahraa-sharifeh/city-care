@@ -11,6 +11,9 @@ const districtSpotlightRoutes = require("./routes/districtSpotlightRoutes");
 
 const app = express();
 
+// Render / reverse proxies — correct protocol & host for upload URLs
+app.set("trust proxy", 1);
+
 const corsOrigins = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(",")
       .map(s => s.trim())
@@ -45,6 +48,8 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+const fileRoutes = require("./routes/fileRoutes");
+app.use("/api", fileRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin/departments", adminDepartmentRoutes);
 app.use("/api", districtSpotlightRoutes);

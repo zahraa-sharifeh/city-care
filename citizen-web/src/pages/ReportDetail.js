@@ -13,6 +13,7 @@ import {
   FaSyncAlt,
 } from "react-icons/fa";
 import { apiFetch } from "../api/client";
+import { resolveUploadUrls } from "../utils/uploadUrl";
 import { getStatusLabel } from "../utils/statusLabels";
 import { resolveIssueCategory } from "../constants/issueCategories";
 import ReportInteractions from "../components/ReportInteractions";
@@ -105,7 +106,7 @@ export default function ReportDetail() {
   const statusClass = statusModifier(report.status);
   const locationLine = [report.governorateId?.name, report.districtId?.name].filter(Boolean).join(" · ");
   const mapsUrl = reportMapUrl(report);
-  const images = report.images || [];
+  const images = resolveUploadUrls(report.images);
   const [featuredImage, ...galleryRest] = images;
 
   return (

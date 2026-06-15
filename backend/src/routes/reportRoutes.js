@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const auth = require("../middleware/auth");
 const optionalAuth = auth.optionalAuth;
-const upload = require("../middleware/upload");
+const upload = require("../middleware/uploadMemory");
 const { createReportIpLimiter } = require("../middleware/rateLimits");
 const { requireCitizen } = require("../middleware/requireTypes");
 const {

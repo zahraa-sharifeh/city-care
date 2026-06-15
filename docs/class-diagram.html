@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>City Care — UML Class Diagram</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Consolas", "Courier New", monospace;
+      background: #f5f7fa;
+      display: flex; justify-content: center; align-items: flex-start;
+      min-height: 100vh; padding: 16px;
+    }
+    .canvas {
+      background: #fff; border: 1px solid #dde3ea; border-radius: 12px;
+      padding: 20px 24px 16px; box-shadow: 0 4px 24px rgba(0,0,0,.08);
+      width: 100%;
+      max-width: 640px;
+    }
+    h1 {
+      text-align: center; font-family: "Segoe UI", sans-serif;
+      font-size: 22px; font-weight: 700; color: #1a2332;
+    }
+    .subtitle {
+      text-align: center; font-family: "Segoe UI", sans-serif;
+      font-size: 13px; color: #6b7a8d; margin: 4px 0 16px;
+    }
+    .note {
+      text-align: center; font-family: "Segoe UI", sans-serif;
+      font-size: 11px; color: #9aa8b8; margin-top: 12px;
+    }
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .legend {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;
+      margin-top: 14px; font-family: "Segoe UI", sans-serif;
+      font-size: 12px; color: #546e7a;
+    }
+  </style>
+</head>
+<body>
+<div class="canvas">
+  <h1>City Care — UML Class Diagram</h1>
+  <p class="subtitle">Conceptual data model · MongoDB collections · associations &amp; multiplicities</p>
+
+  <svg viewBox="0 0 1340 1080" preserveAspectRatio="xMidYMid meet" font-family="Consolas, Courier New, monospace" font-size="11">
+
+    <defs>
+      <marker id="open" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+        <path d="M0,0 L7,3 L0,6 Z" fill="#455a64"/>
+      </marker>
+      <marker id="diamond" markerWidth="12" markerHeight="12" refX="0" refY="6" orient="auto">
+        <path d="M0,6 L6,0 L12,6 L6,12 Z" fill="#fff" stroke="#455a64" stroke-width="1.2"/>
+      </marker>
+      <marker id="diamond-fill" markerWidth="12" markerHeight="12" refX="0" refY="6" orient="auto">
+        <path d="M0,6 L6,0 L12,6 L6,12 Z" fill="#455a64" stroke="#455a64" stroke-width="1.2"/>
+      </marker>
+    </defs>
+
+    <!-- ═══════════════════════════════════════════
+         CLASS BOX MACRO — drawn manually per class
+    ═══════════════════════════════════════════ -->
+
+    <!-- Governorate -->
+    <g id="Governorate" transform="translate(80,60)">
+      <rect width="200" height="72" fill="#fff8e1" stroke="#f9a825" stroke-width="1.8"/>
+      <rect width="200" height="22" fill="#fff3c4" stroke="#f9a825" stroke-width="1.8"/>
+      <text x="100" y="15" text-anchor="middle" font-weight="700" font-size="11" fill="#e65100">Governorate</text>
+      <line x1="0" y1="22" x2="200" y2="22" stroke="#f9a825" stroke-width="1"/>
+      <text x="8" y="38" fill="#37474f">- _id: ObjectId</text>
+      <text x="8" y="52" fill="#37474f">- name: String {unique}</text>
+      <text x="8" y="66" fill="#37474f">- createdAt, updatedAt</text>
+    </g>
+
+    <!-- District -->
+    <g id="District" transform="translate(80,220)">
+      <rect width="220" height="86" fill="#fff8e1" stroke="#f9a825" stroke-width="1.8"/>
+      <rect width="220" height="22" fill="#fff3c4" stroke="#f9a825" stroke-width="1.8"/>
+      <text x="110" y="15" text-anchor="middle" font-weight="700" font-size="11" fill="#e65100">District</text>
+      <line x1="0" y1="22" x2="220" y2="22" stroke="#f9a825" stroke-width="1"/>
+      <text x="8" y="38" fill="#37474f">- _id: ObjectId</text>
+      <text x="8" y="52" fill="#37474f">- name: String</text>
+      <text x="8" y="66" fill="#37474f">- governorateId: ObjectId → Governorate</text>
+      <text x="8" y="80" fill="#37474f">- createdAt, updatedAt</text>
+    </g>
+
+    <!-- User -->
+    <g id="User" transform="translate(80,420)">
+      <rect width="240" height="130" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.8"/>
+      <rect width="240" height="22" fill="#bbdefb" stroke="#1976d2" stroke-width="1.8"/>
+      <text x="120" y="15" text-anchor="middle" font-weight="700" font-size="11" fill="#0d47a1">User</text>
+      <line x1="0" y1="22" x2="240" y2="22" stroke="#1976d2" stroke-width="1"/>
+      <text x="8" y="38" fill="#37474f">- _id: ObjectId</text>
+      <text x="8" y="52" fill="#37474f">- fullName: String</text>
+      <text x="8" y="66" fill="#37474f">- email: String {unique}</text>
+      <text x="8" y="80" fill="#37474f">- passwordHash: String</text>
+      <text x="8" y="94" fill="#37474f">- googleId: String? {sparse unique}</text>
+      <text x="8" y="108" fill="#37474f">- districtId: ObjectId? → District</text>
+      <text x="8" y="122" fill="#37474f">- passwordResetTokenHash, passwordResetExpiresAt</text>
+    </g>
+
+    <!-- Admin -->
+    <g id="Admin" transform="translate(80,620)">
+      <rect width="240" height="100" fill="#e8f5e9" stroke="#388e3c" stroke-width="1.8"/>
+      <rect width="240" height="22" fill="#c8e6c9" stroke="#388e3c" stroke-width="1.8"/>
+      <text x="120" y="15" text-anchor="middle" font-weight="700" font-size="11" fill="#1b5e20">Admin</text>
+      <line x1="0" y1="22" x2="240" y2="22" stroke="#388e3c" stroke-width="1"/>
+      <text x="8" y="38" fill="#37474f">- _id: ObjectId</text>
+      <text x="8" y="52" fill="#37474f">- fullName: String</text>
+      <text x="8" y="66" fill="#37474f">- email: String {unique}</text>
+      <text x="8" y="80" fill="#37474f">- passwordHash: String</text>
+      <text x="8" y="94" fill="#37474f">- role: DISTRICT_ADMIN | SUPER_ADMIN</text>
+      <text x="8" y="108" fill="#37474f">- districtId: ObjectId? → District</text>
+    </g>
+
+    <!-- Department -->
+    <g id="Department" transform="translate(80,780)">
+      <rect width="220" height="86" fill="#f3e5f5" stroke="#8e24aa" stroke-width="1.8"/>
+      <rect width="220" height="22" fill="#e1bee7" stroke="#8e24aa" stroke-width="1.8"/>
+      <text x="110" y="15" text-anchor="middle" font-weight="700" font-size="11" fill="#6a1b9a">Department</text>
+      <line x1="0" y1="22" x2="220" y2="22" stroke="#8e24aa" stroke-width="1"/>
+      <text x="8" y="38" fill="#37474f">- _id: ObjectId</text>
+      <text x="8" y="52" fill="#37474f">- name: String {unique}</text>
+      <text x="8" y="66" fill="#37474f">- description: String</text>
+      <text x="8" y="80" fill="#37474f">- isActive: Boolean</text>
+    </g>
+
+    <!-- Report (central, large) -->
+    <g id="Report" transform="translate(480,280)">
+      <rect width="300" height="230" fill="#ffebee" stroke="#c62828" stroke-width="2"/>
+      <rect width="300" height="22" fill="#ffcdd2" stroke="#c62828" stroke-width="2"/>
+      <text x="150" y="15" text-anchor="middle" font-weight="700" font-size="12" fill="#b71c1c">Report</text>
+      <line x1="0" y1="22" x2="300" y2="22" stroke="#c62828" stroke-width="1"/>
+      <text x="8" y="38" fill="#37474f">- _id: ObjectId</text>
+      <text x="8" y="52" fill="#37474f">- userId: ObjectId → User</text>
+      <text x="8" y="66" fill="#37474f">- governorateId: ObjectId → Governorate</text>
+      <text x="8" y="80" fill="#37474f">- districtId: ObjectId → District</text>
+      <text x="8" y="94" fill="#37474f">- category: String (12 fixed categories)</text>
+      <text x="8" y="108" fill="#37474f">- description: String</text>
+      <text x="8" y="122" fill="#37474f">- locationDescription: String</text>
+      <text x="8" y="136" fill="#37474f">- location: GeoJSON Point [lng, lat] {2dsphere}</text>
+      <text x="8" y="150" fill="#37474f">- images: String[1..5]</text>
+      <text x="8" y="164" fill="#37474f">- status: PENDING | IN_PROGRESS | RESOLVED | REJECTED</text>
+      <text x="8" y="178" fill="#37474f">- priority: LOW | MEDIUM | HIGH | CRITICAL</text>
+      <text x="8" y="192" fill="#37474f">- departmentId: ObjectId? → Department</text>
+      <text x="8" y="206" fill="#37474f">- statusNote: String (max 1000)</text>
+      <text x="8" y="220" fill="#37474f">- duplicateReview: DuplicateReview (embedded)</text>
+    </g>
+
+    <!-- DuplicateReview (embedded value object) -->
+    <g id="DuplicateReview" transform="translate(820,280)">
+      <rect width="230" height="72" fill="#fff3e0" stroke="#ef6c00" stroke-width="1.5" stroke-dasharray="6,3"/>
+      <rect width="230" height="22" fill="#ffe0b2" stroke="#ef6c00" stroke-width="1.5" stroke-dasharray="6,3"/>
+      <text x="115" y="15" text-anchor="middle" font-weight="700" font-size="10" fill="#e65100">«embedded» DuplicateReview</text>
+      <line x1="0" y1="22" x2="230" y2="22" stroke="#ef6c00" stroke-width="1"/>
+      <text x="8" y="38" fill="#37474f">- status: PENDING_REVIEW |</text>
+      <text x="16" y="50" fill="#37474f">CONFIRMED_DUPLICATE | NOT_DUPLICATE</text>
+      <text x="8" y="64" fill="#37474f">- primaryReportId: ObjectId? → Report</text>
+    </g>
+
+    <!-- Comment -->
+    <g id="Comment" transform="translate(480,560)">
+      <rect width="220" height="86" fill="#e0f7fa" stroke="#00838f" stroke-width="1.8"/>
+      <rect width="220" height="22" fill="#b2ebf2" stroke="#00838f" stroke-width="1.8"/>
+      <text x="110" y="15" text-anchor="middle" font-weight="700" font-size="11" fill="#006064">Comment</text>
+      <line x1="0" y1="22" x2="220" y2="22" stroke="#00838f" stroke-width="1"/>
+      <text x="8" y="38" fill="#37474f">- _id: ObjectId</text>
+      <text x="8" y="52" fill="#37474f">- reportId: ObjectId → Report</text>
+      <text x="8" y="66" fill="#37474f">- userId: ObjectId → User</text>
+      <text x="8" y="80" fill="#37474f">- text: String (max 1000)</text>
+    </g>
+
+    <!-- ReportLike -->
+    <g id="ReportLike" transform="translate(480,690)">
+      <rect width="220" height="72" fill="#e0f7fa" stroke="#00838f" stroke-width="1.8"/>
+      <rect width="220" height="22" fill="#b2ebf2" stroke="#00838f" stroke-width="1.8"/>
+      <text x="110" y="15" text-anchor="middle" font-weight="700" font-size="11" fill="#006064">ReportLike</text>
+      <line x1="0" y1="22" x2="220" y2="22" stroke="#00838f" stroke-width="1"/>
+      <text x="8" y="38" fill="#37474f">- _id: ObjectId</text>
+      <text x="8" y="52" fill="#37474f">- reportId: ObjectId → Report</text>
+      <text x="8" y="66" fill="#37474f">- userId: ObjectId → User {unique pair}</text>
+    </g>
+
+    <!-- Notification -->
+    <g id="Notification" transform="translate(480,810)">
+      <rect width="260" height="120" fill="#e0f7fa" stroke="#00838f" stroke-width="1.8"/>
+      <rect width="260" height="22" fill="#b2ebf2" stroke="#00838f" stroke-width="1.8"/>
+      <text x="130" y="15" text-anchor="middle" font-weight="700" font-size="11" fill="#006064">Notification</text>
+      <line x1="0" y1="22" x2="260" y2="22" stroke="#00838f" stroke-width="1"/>
+      <text x="8" y="38" fill="#37474f">- _id: ObjectId</text>
+      <text x="8" y="52" fill="#37474f">- userId: ObjectId → User</text>
+      <text x="8" y="66" fill="#37474f">- reportId: ObjectId → Report</text>
+      <text x="8" y="80" fill="#37474f">- type: REPORT_STATUS | REPORT_COMMENT | REPORT_LIKE</text>
+      <text x="8" y="94" fill="#37474f">- title: String · message: String</text>
+      <text x="8" y="108" fill="#37474f">- isRead: Boolean · readAt: Date?</text>
+      <text x="8" y="122" fill="#37474f">- data: {status, previousStatus, category, statusNote, actorName}</text>
+    </g>
+
+    <!-- DistrictSpotlight -->
+    <g id="DistrictSpotlight" transform="translate(820,420)">
+      <rect width="260" height="100" fill="#fce4ec" stroke="#c2185b" stroke-width="1.8"/>
+      <rect width="260" height="22" fill="#f8bbd0" stroke="#c2185b" stroke-width="1.8"/>
+      <text x="130" y="15" text-anchor="middle" font-weight="700" font-size="11" fill="#880e4f">DistrictSpotlight</text>
+      <line x1="0" y1="22" x2="260" y2="22" stroke="#c2185b" stroke-width="1"/>
+      <text x="8" y="38" fill="#37474f">- _id: ObjectId</text>
+      <text x="8" y="52" fill="#37474f">- districtId: ObjectId → District {unique}</text>
+      <text x="8" y="66" fill="#37474f">- essay: String (max 20000)</text>
+      <text x="8" y="80" fill="#37474f">- heritageInfo: String (max 20000)</text>
+      <text x="8" y="94" fill="#37474f">- events: SpotlightEvent[0..25]</text>
+      <text x="8" y="108" fill="#37474f">- lastUpdatedBy: ObjectId? → Admin</text>
+    </g>
+
+    <!-- SpotlightEvent (embedded) -->
+    <g id="SpotlightEvent" transform="translate(820,560)">
+      <rect width="260" height="100" fill="#fce4ec" stroke="#c2185b" stroke-width="1.5" stroke-dasharray="6,3"/>
+      <rect width="260" height="22" fill="#f8bbd0" stroke="#c2185b" stroke-width="1.5" stroke-dasharray="6,3"/>
+      <text x="130" y="15" text-anchor="middle" font-weight="700" font-size="10" fill="#880e4f">«embedded» SpotlightEvent</text>
+      <line x1="0" y1="22" x2="260" y2="22" stroke="#c2185b" stroke-width="1"/>
+      <text x="8" y="38" fill="#37474f">- title: String (max 300)</text>
+      <text x="8" y="52" fill="#37474f">- summary: String (max 2000)</text>
+      <text x="8" y="66" fill="#37474f">- startsAt: Date?</text>
+      <text x="8" y="80" fill="#37474f">- venue: String? (max 300)</text>
+      <text x="8" y="94" fill="#37474f">- url: String? (max 2000)</text>
+    </g>
+
+    <!-- Zone labels -->
+    <text x="190" y="48" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="9" font-weight="700" fill="#90a4ae" letter-spacing="1">GEOGRAPHY</text>
+    <text x="200" y="408" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="9" font-weight="700" fill="#90a4ae" letter-spacing="1">ACTORS</text>
+    <text x="630" y="268" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="9" font-weight="700" fill="#90a4ae" letter-spacing="1">CORE ENTITY</text>
+    <text x="590" y="548" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="9" font-weight="700" fill="#90a4ae" letter-spacing="1">SOCIAL / NOTIFICATIONS</text>
+    <text x="950" y="408" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="9" font-weight="700" fill="#90a4ae" letter-spacing="1">CIVIC CONTENT</text>
+
+    <!-- ═══════════════════════════════════════════
+         ASSOCIATIONS
+    ═══════════════════════════════════════════ -->
+
+    <!-- Governorate ◆── 1..* District (composition) -->
+    <line x1="180" y1="132" x2="180" y2="220" stroke="#455a64" stroke-width="1.5" marker-start="url(#diamond-fill)" marker-end="url(#open)"/>
+    <text x="188" y="178" font-size="9" fill="#455a64">1</text>
+    <text x="188" y="210" font-size="9" fill="#455a64">1..*</text>
+    <text x="192" y="195" font-family="Segoe UI,sans-serif" font-size="8" fill="#78909c">contains</text>
+
+    <!-- District ── 0..* Report -->
+    <line x1="300" y1="263" x2="480" y2="380" stroke="#455a64" stroke-width="1.5" marker-end="url(#open)"/>
+    <text x="360" y="310" font-size="9" fill="#455a64">1</text>
+    <text x="468" y="378" font-size="9" fill="#455a64">*</text>
+
+    <!-- Governorate ── * Report -->
+    <line x1="280" y1="96" x2="480" y2="310" stroke="#455a64" stroke-width="1.2" marker-end="url(#open)"/>
+    <text x="370" y="190" font-size="9" fill="#455a64">1 .. *</text>
+
+    <!-- User ── 0..* Report -->
+    <line x1="320" y1="485" x2="480" y2="400" stroke="#455a64" stroke-width="1.5" marker-end="url(#open)"/>
+    <text x="380" y="430" font-size="9" fill="#455a64">1</text>
+    <text x="472" y="402" font-size="9" fill="#455a64">0..*</text>
+    <text x="370" y="448" font-family="Segoe UI,sans-serif" font-size="8" fill="#78909c">submits</text>
+
+    <!-- User ── 0..1 District (optional profile district) -->
+    <line x1="200" y1="420" x2="200" y2="306" stroke="#455a64" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#open)"/>
+    <text x="208" y="360" font-size="9" fill="#455a64">0..1</text>
+    <text x="208" y="400" font-size="9" fill="#455a64">*</text>
+    <text x="212" y="378" font-family="Segoe UI,sans-serif" font-size="8" fill="#78909c">profile</text>
+
+    <!-- Admin ── 0..1 District -->
+    <line x1="200" y1="620" x2="200" y2="306" stroke="#455a64" stroke-width="1.5" marker-end="url(#open)"/>
+    <text x="208" y="460" font-size="9" fill="#455a64">0..1</text>
+    <text x="208" y="610" font-size="9" fill="#455a64">1</text>
+    <text x="212" y="530" font-family="Segoe UI,sans-serif" font-size="8" fill="#78909c">manages</text>
+
+    <!-- Department ── 0..* Report -->
+    <line x1="300" y1="810" x2="480" y2="470" stroke="#455a64" stroke-width="1.2" marker-end="url(#open)"/>
+    <text x="370" y="650" font-size="9" fill="#455a64">0..1</text>
+    <text x="472" y="468" font-size="9" fill="#455a64">*</text>
+    <text x="360" y="630" font-family="Segoe UI,sans-serif" font-size="8" fill="#78909c">assigned to</text>
+
+    <!-- Report ◆── DuplicateReview (composition embedded) -->
+    <line x1="780" y1="340" x2="820" y2="316" stroke="#ef6c00" stroke-width="1.3" stroke-dasharray="4,3" marker-start="url(#diamond-fill)" marker-end="url(#open)"/>
+    <text x="790" y="322" font-size="8" fill="#ef6c00">1</text>
+    <text x="812" y="312" font-size="8" fill="#ef6c00">1</text>
+
+    <!-- Report reflexive duplicate-of -->
+    <path d="M 630,280 Q 630,200 720,200 Q 810,200 810,280" fill="none" stroke="#ef6c00" stroke-width="1.5" marker-end="url(#open)"/>
+    <text x="720" y="192" text-anchor="middle" font-size="9" fill="#ef6c00">duplicate of (0..1 primary)</text>
+    <text x="720" y="204" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="8" fill="#78909c">reflexive via primaryReportId</text>
+
+    <!-- Report ── * Comment -->
+    <line x1="590" y1="510" x2="590" y2="560" stroke="#455a64" stroke-width="1.5" marker-end="url(#open)"/>
+    <text x="598" y="530" font-size="9" fill="#455a64">1</text>
+    <text x="598" y="556" font-size="9" fill="#455a64">0..*</text>
+
+    <!-- User ── * Comment -->
+    <line x1="320" y1="520" x2="480" y2="590" stroke="#455a64" stroke-width="1.2" marker-end="url(#open)"/>
+    <text x="380" y="548" font-size="9" fill="#455a64">1 .. *</text>
+    <text x="390" y="562" font-family="Segoe UI,sans-serif" font-size="8" fill="#78909c">writes</text>
+
+    <!-- Report ── * ReportLike -->
+    <line x1="550" y1="510" x2="550" y2="690" stroke="#455a64" stroke-width="1.2" marker-end="url(#open)"/>
+    <text x="558" y="600" font-size="9" fill="#455a64">1 .. 0..*</text>
+
+    <!-- User ── * ReportLike -->
+    <line x1="320" y1="540" x2="480" y2="720" stroke="#455a64" stroke-width="1.2" marker-end="url(#open)"/>
+    <text x="380" y="640" font-size="9" fill="#455a64">1 .. *</text>
+    <text x="390" y="654" font-family="Segoe UI,sans-serif" font-size="8" fill="#78909c">likes</text>
+
+    <!-- Report ── * Notification -->
+    <line x1="620" y1="510" x2="620" y2="810" stroke="#455a64" stroke-width="1.2" marker-end="url(#open)"/>
+    <text x="628" y="660" font-size="9" fill="#455a64">1 .. 0..*</text>
+
+    <!-- User ── * Notification -->
+    <line x1="320" y1="550" x2="480" y2="860" stroke="#455a64" stroke-width="1.2" marker-end="url(#open)"/>
+    <text x="380" y="720" font-size="9" fill="#455a64">1 .. 0..*</text>
+    <text x="390" y="734" font-family="Segoe UI,sans-serif" font-size="8" fill="#78909c">receives</text>
+
+    <!-- District ── 0..1 DistrictSpotlight -->
+    <line x1="300" y1="250" x2="820" y2="460" stroke="#455a64" stroke-width="1.5" marker-end="url(#open)"/>
+    <text x="540" y="340" font-size="9" fill="#455a64">1</text>
+    <text x="812" y="458" font-size="9" fill="#455a64">0..1</text>
+    <text x="540" y="356" font-family="Segoe UI,sans-serif" font-size="8" fill="#78909c">has spotlight</text>
+
+    <!-- DistrictSpotlight ◆── SpotlightEvent (composition) -->
+    <line x1="950" y1="520" x2="950" y2="560" stroke="#c2185b" stroke-width="1.3" stroke-dasharray="4,3" marker-start="url(#diamond-fill)" marker-end="url(#open)"/>
+    <text x="958" y="538" font-size="8" fill="#c2185b">1</text>
+    <text x="958" y="556" font-size="8" fill="#c2185b">0..25</text>
+
+    <!-- Admin ── updates DistrictSpotlight -->
+    <line x1="320" y1="670" x2="820" y2="500" stroke="#455a64" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#open)"/>
+    <text x="560" y="570" font-size="9" fill="#455a64">0..1 lastUpdatedBy</text>
+
+    <!-- Notes box -->
+    <rect x="80" y="960" width="1000" height="100" rx="4" fill="#eceff1" stroke="#b0bec5" stroke-width="1"/>
+    <text x="92" y="978" font-family="Segoe UI,sans-serif" font-size="9" fill="#37474f" font-weight="700">Design justifications:</text>
+    <text x="92" y="994" font-family="Segoe UI,sans-serif" font-size="8.5" fill="#546e7a">
+      &bull; Governorate–District is composition (district cannot exist without governorate); enforced at report submission (district must belong to governorate).
+    </text>
+    <text x="92" y="1008" font-family="Segoe UI,sans-serif" font-size="8.5" fill="#546e7a">
+      &bull; Admin uses one class with role attribute (DISTRICT_ADMIN | SUPER_ADMIN) and optional districtId — super admin has null districtId and global scope.
+    </text>
+    <text x="92" y="1022" font-family="Segoe UI,sans-serif" font-size="8.5" fill="#546e7a">
+      &bull; DuplicateReview and SpotlightEvent are embedded value objects (dashed boxes); Comment, ReportLike, Notification are separate collections (association classes).
+    </text>
+    <text x="92" y="1036" font-family="Segoe UI,sans-serif" font-size="8.5" fill="#546e7a">
+      &bull; ReportLike enforces unique (reportId, userId) pair; Report location uses GeoJSON Point with 2dsphere index for geospatial queries (duplicates, nearby-similar).
+    </text>
+    <text x="92" y="1050" font-family="Segoe UI,sans-serif" font-size="8.5" fill="#546e7a">
+      &bull; 12 fixed issue categories: Infrastructure &amp; Roads, Lighting &amp; Electricity, Water &amp; Sewage, Waste &amp; Cleanliness, Parks &amp; Public Spaces, Traffic &amp; Transport, Buildings &amp; Construction, Noise &amp; Disturbances, Environment &amp; Pollution, Animals &amp; Pests, Public Safety Hazards, Other.
+    </text>
+
+  </svg>
+
+  <div class="legend">
+    <span>◆ filled diamond = composition (embedded / strict ownership)</span>
+    <span>— dashed box = embedded value object (not a separate collection)</span>
+    <span>— dashed line = optional / audit reference</span>
+    <span>0..1 / 1..* / * = UML multiplicities</span>
+  </div>
+  <p class="note">Screenshot this page and paste into your report as Figure: UML Class Diagram of City Care</p>
+</div>
+</body>
+</html>

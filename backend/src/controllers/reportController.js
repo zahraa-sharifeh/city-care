@@ -2,6 +2,8 @@ const Report = require("../models/Report");
 const District = require("../models/District");
 const { citizenOwnsReport, parseObjectId } = require("../services/reportAccess");
 const { findDuplicateCandidates, pickAutoDuplicatePrimary } = require("../services/duplicateDetection");
+const { storeReportFile, storedFilePath } = require("../services/reportFileStorage");
+const { normalizeReportImages, normalizeReportsList } = require("../utils/uploadUrls");
 
 const populateReport = [
   { path: "governorateId", select: "name" },
@@ -48,7 +50,11 @@ exports.createReport = async (req, res) => {
     const district = await District.findOne({ _id: districtId, governorateId });
     if (!district) return res.status(400).json({ message: "District does not belong to selected governorate" });
 
-    const imageUrls = files.map(f => `${req.protocol}://${req.get("host")}/uploads/${f.filename}`);
+    const imageUrls = [];
+    for (const file of files) {
+      const fileId = await storeReportFile(file.buffer, file.originalname, file.mimetype);
+      imageUrls.push(storedFilePath(fileId));
+    }
 
     const created = await Report.create({
       userId: req.user.id,
@@ -86,7 +92,7 @@ exports.createReport = async (req, res) => {
     }
 
     const report = await Report.findById(created._id).populate(populateReport);
-    res.status(201).json(report);
+    res.status(201).json(normalizeReportImages(report, req));
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
@@ -111,7 +117,14 @@ exports.listMine = async (req, res) => {
       Report.countDocuments(openFilter),
     ]);
 
-    res.json({ items, total, openCount, page, limit, pages: Math.ceil(total / limit) || 1 });
+    res.json({
+      items: normalizeReportsList(items, req),
+      total,
+      openCount,
+      page,
+      limit,
+      pages: Math.ceil(total / limit) || 1,
+    });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
@@ -124,7 +137,7 @@ exports.getMineById = async (req, res) => {
     if (!citizenOwnsReport(req.user, report)) {
       return res.status(404).json({ message: "Report not found" });
     }
-    res.json(report);
+    res.json(normalizeReportImages(report, req));
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
@@ -294,7 +307,13 @@ exports.listPublicReports = async (req, res) => {
       Report.countDocuments(filter),
     ]);
 
-    res.json({ items, total, page, limit, pages: Math.ceil(total / limit) || 1 });
+    res.json({
+      items: normalizeReportsList(items, req),
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit) || 1,
+    });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
@@ -317,7 +336,7 @@ exports.getPublicReportById = async (req, res) => {
       String(report.userId) === String(viewer.id);
 
     const { userId, departmentId, duplicateReview, priority, ...publicFields } = report;
-    res.json({ ...publicFields, isMine: Boolean(isMine) });
+    res.json({ ...normalizeReportImages(publicFields, req), isMine: Boolean(isMine) });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }

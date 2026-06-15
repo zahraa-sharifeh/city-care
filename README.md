@@ -7,10 +7,13 @@ Thesis project: citizens report urban issues (with photos and map coordinates); 
 - [API contract & auth rules](docs/API.md)
 - [Features & implementation report](docs/FEATURES-REPORT.md)
 - [Location, GPS & Browser Geolocation](docs/GEOLOCATION.md)
+- [Arabic language integration (i18n & RTL)](docs/ARABIC-I18N.md)
 - [Test data for creating reports](docs/TEST-DATA-CREATE-REPORT.md)
 - [Admins: seed / UI / Compass](docs/mongodb-admins.md)
 - [ClickUp structure template](docs/clickup-setup.md)
 - [Thesis deliverables checklist](docs/thesis-deliverables.md)
+- [Project defense — Q&A & must-know guide](docs/PROJECT-DEFENSE-QA.md)
+- [Project defense — presentation & demo guide](docs/PROJECT-DEFENSE-PRESENTATION.md)
 
 ## Prerequisites
 
