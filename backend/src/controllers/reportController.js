@@ -2,7 +2,7 @@ const Report = require("../models/Report");
 const District = require("../models/District");
 const { citizenOwnsReport, parseObjectId } = require("../services/reportAccess");
 const { findDuplicateCandidates, pickAutoDuplicatePrimary } = require("../services/duplicateDetection");
-const { storeReportFile, storedFilePath } = require("../services/reportFileStorage");
+const { storeReportFile, storedUploadPath } = require("../services/reportFileStorage");
 const { normalizeReportImages, normalizeReportsList } = require("../utils/uploadUrls");
 
 const populateReport = [
@@ -52,8 +52,8 @@ exports.createReport = async (req, res) => {
 
     const imageUrls = [];
     for (const file of files) {
-      const fileId = await storeReportFile(file.buffer, file.originalname, file.mimetype);
-      imageUrls.push(storedFilePath(fileId));
+      const filename = await storeReportFile(file.buffer, file.originalname, file.mimetype);
+      imageUrls.push(storedUploadPath(filename));
     }
 
     const created = await Report.create({
@@ -92,7 +92,7 @@ exports.createReport = async (req, res) => {
     }
 
     const report = await Report.findById(created._id).populate(populateReport);
-    res.status(201).json(normalizeReportImages(report, req));
+    res.status(201).json(normalizeReportImages(report));
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
@@ -118,7 +118,7 @@ exports.listMine = async (req, res) => {
     ]);
 
     res.json({
-      items: normalizeReportsList(items, req),
+      items: normalizeReportsList(items),
       total,
       openCount,
       page,
@@ -137,7 +137,7 @@ exports.getMineById = async (req, res) => {
     if (!citizenOwnsReport(req.user, report)) {
       return res.status(404).json({ message: "Report not found" });
     }
-    res.json(normalizeReportImages(report, req));
+    res.json(normalizeReportImages(report));
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
@@ -308,7 +308,7 @@ exports.listPublicReports = async (req, res) => {
     ]);
 
     res.json({
-      items: normalizeReportsList(items, req),
+      items: normalizeReportsList(items),
       total,
       page,
       limit,
@@ -336,7 +336,7 @@ exports.getPublicReportById = async (req, res) => {
       String(report.userId) === String(viewer.id);
 
     const { userId, departmentId, duplicateReview, priority, ...publicFields } = report;
-    res.json({ ...normalizeReportImages(publicFields, req), isMine: Boolean(isMine) });
+    res.json({ ...normalizeReportImages(publicFields), isMine: Boolean(isMine) });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }

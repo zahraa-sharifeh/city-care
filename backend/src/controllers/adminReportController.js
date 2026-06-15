@@ -203,7 +203,7 @@ exports.listReports = async (req, res) => {
     ]);
 
     res.json({
-      items: normalizeReportsList(items, req),
+      items: normalizeReportsList(items),
       total,
       page,
       limit,
@@ -299,7 +299,7 @@ exports.getReport = async (req, res) => {
 
     const scope = buildAdminScopeFilter(req.user) || {};
     const duplicateCandidates = await findDuplicateCandidates(report, scope);
-    res.json({ ...normalizeReportImages(report, req), duplicateCandidates });
+    res.json({ ...normalizeReportImages(report), duplicateCandidates });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }

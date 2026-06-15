@@ -1,6 +1,6 @@
 /**
- * Report images are stored as `/uploads/<filename>` in MongoDB.
- * Full URLs are resolved on read using PUBLIC_API_URL or the incoming request.
+ * Report images are stored as relative paths: /uploads/<filename> or /api/files/<id>.
+ * API responses keep paths relative; frontends prepend REACT_APP_API_URL.
  */
 
 function getApiPublicBase(req) {
@@ -29,46 +29,46 @@ function extractUploadPath(value) {
   return "";
 }
 
-function resolveUploadUrl(value, req) {
+/** Always return a relative media path for JSON API responses. */
+function toRelativeMediaPath(value) {
   const trimmed = String(value || "").trim();
   if (!trimmed) return "";
 
   const uploadPath = extractUploadPath(trimmed);
-  if (uploadPath) {
-    const base = getApiPublicBase(req);
-    return base ? `${base}${uploadPath}` : uploadPath;
-  }
+  if (uploadPath) return uploadPath;
 
-  if (/^https?:\/\//i.test(trimmed)) return trimmed;
-  return trimmed;
+  if (!trimmed.includes("/")) return `/uploads/${trimmed}`;
+  return "";
 }
 
-function normalizeReportImages(report, req) {
+/** Full URL for PDF export / e-mail (optional). */
+function resolveUploadUrl(value, req) {
+  const relative = toRelativeMediaPath(value);
+  if (!relative) {
+    if (/^https?:\/\//i.test(String(value || "").trim())) return String(value).trim();
+    return "";
+  }
+  const base = getApiPublicBase(req);
+  return base ? `${base}${relative}` : relative;
+}
+
+function normalizeReportImages(report) {
   if (!report) return report;
   const out = report.toObject ? report.toObject({ virtuals: true }) : { ...report };
   if (Array.isArray(out.images)) {
-    out.images = out.images.map(url => resolveUploadUrl(url, req));
+    out.images = out.images.map(url => toRelativeMediaPath(url)).filter(Boolean);
   }
   return out;
 }
 
-function normalizeReportsList(items, req) {
-  return (items || []).map(item => normalizeReportImages(item, req));
-}
-
-function storedUploadPath(filename) {
-  return `/uploads/${filename}`;
-}
-
-function storedFilePath(fileId) {
-  return `/api/files/${fileId}`;
+function normalizeReportsList(items) {
+  return (items || []).map(item => normalizeReportImages(item));
 }
 
 module.exports = {
   getApiPublicBase,
+  toRelativeMediaPath,
   resolveUploadUrl,
   normalizeReportImages,
   normalizeReportsList,
-  storedUploadPath,
-  storedFilePath,
 };

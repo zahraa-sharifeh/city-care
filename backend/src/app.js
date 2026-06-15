@@ -1,4 +1,3 @@
-const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -38,6 +37,7 @@ app.get("/api/health", (req, res) => {
     status: "ok",
     message: "Smart City API running",
     googleSignIn: Boolean((process.env.GOOGLE_CLIENT_ID || "").trim()),
+    uploads: "gridfs",
     mongo: {
       connected,
       host: connected ? mongoose.connection.host : configured.host,
@@ -48,13 +48,13 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+const uploadRoutes = require("./routes/uploadRoutes");
+app.use("/uploads", uploadRoutes);
 const fileRoutes = require("./routes/fileRoutes");
 app.use("/api", fileRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin/departments", adminDepartmentRoutes);
 app.use("/api", districtSpotlightRoutes);
-const uploadsDir = path.join(__dirname, "..", "uploads");
-app.use("/uploads", express.static(uploadsDir));
 
 const commentRoutes = require("./routes/commentRoutes");
 app.use("/api", commentRoutes);

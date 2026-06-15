@@ -14,4 +14,4 @@ services:
       - key: JWT_EXPIRES_IN
         value: 7d
       # Set in Render dashboard (do not commit secrets):
-      # MONGO_URI, JWT_SECRET, CORS_ORIGIN, GOOGLE_CLIENT_ID
+      # MONGO_URI, JWT_SECRET, CORS_ORIGIN, GOOGLE_CLIENT_ID, PUBLIC_API_URL
