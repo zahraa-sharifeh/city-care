@@ -48,6 +48,8 @@ export default function AdminReportDetail() {
   const [comments, setComments] = useState([]);
   const [status, setStatus] = useState("");
   const [priority, setPriority] = useState("MEDIUM");
+  const [departmentId, setDepartmentId] = useState("");
+  const [departments, setDepartments] = useState([]);
   const [statusNote, setStatusNote] = useState("");
   const [duplicateCandidates, setDuplicateCandidates] = useState([]);
   const [duplicateLoading, setDuplicateLoading] = useState("");
@@ -62,16 +64,19 @@ export default function AdminReportDetail() {
   async function load() {
     setError("");
     try {
-      const [r, c] = await Promise.all([
+      const [r, c, deps] = await Promise.all([
         apiFetch(`/api/admin/reports/${id}`),
         apiFetch(`/api/reports/${id}/comments`),
+        apiFetch("/api/admin/departments"),
       ]);
       setReport(r);
       setStatus(r.status);
       setPriority(r.priority || "MEDIUM");
+      setDepartmentId(r.departmentId?._id || r.departmentId || "");
       setStatusNote(r.statusNote || "");
       setDuplicateCandidates(r.duplicateCandidates || []);
       setComments(c);
+      setDepartments(deps || []);
     } catch (e) {
       setError(e.message);
     }
@@ -95,11 +100,17 @@ export default function AdminReportDetail() {
     try {
       const updated = await apiFetch(`/api/admin/reports/${id}`, {
         method: "PATCH",
-        body: JSON.stringify({ status, priority, statusNote }),
+        body: JSON.stringify({
+          status,
+          priority,
+          statusNote,
+          departmentId: departmentId || null,
+        }),
       });
       setReport(updated);
       setStatus(updated.status);
       setPriority(updated.priority || "MEDIUM");
+      setDepartmentId(updated.departmentId?._id || updated.departmentId || "");
       setStatusNote(updated.statusNote || "");
     } catch (err) {
       setError(err.message);
@@ -230,9 +241,11 @@ export default function AdminReportDetail() {
   const statusClass = statusModifier(report.status);
   const locationLine = [report.governorateId?.name, report.districtId?.name].filter(Boolean).join(" · ");
   const images = resolveUploadUrls(report.images);
+  const currentDepartmentId = report.departmentId?._id || report.departmentId || "";
   const isFormDirty =
     status !== report.status ||
     priority !== (report.priority || "MEDIUM") ||
+    String(departmentId || "") !== String(currentDepartmentId || "") ||
     (statusNote || "") !== (report.statusNote || "");
 
   return (
@@ -285,6 +298,10 @@ export default function AdminReportDetail() {
               {report.userId?.fullName || "—"}
               {report.userId?.email ? <span className="admin-report-meta-sub"> {report.userId.email}</span> : null}
             </dd>
+          </div>
+          <div className="admin-report-meta-item">
+            <dt>{t("reports.departmentLabel")}</dt>
+            <dd>{report.departmentId?.name || t("reports.unassigned")}</dd>
           </div>
           <div className="admin-report-meta-item">
             <dt>
@@ -489,6 +506,17 @@ export default function AdminReportDetail() {
                   {priorityOptions.map(option => (
                     <option key={option.value} value={option.value}>
                       {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label htmlFor="department">{t("reports.department")}</label>
+                <select id="department" value={departmentId} onChange={e => setDepartmentId(e.target.value)}>
+                  <option value="">{t("reports.unassigned")}</option>
+                  {departments.map(dep => (
+                    <option key={dep._id} value={dep._id}>
+                      {dep.name}
                     </option>
                   ))}
                 </select>
